@@ -4,11 +4,20 @@
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
 
+#include "proctor/timer.h"
+
 using namespace std;
 using namespace pcl;
 
 class Agent {
 public:
+
+  enum TimerBin {
+    OBTAIN_FEATURES_TRAINING,
+    COMPUTE_FEATURES_TESTING,
+    COMPUTE_REGISTRATION,
+    NUM_BINS
+  };
 
   /**
    * do any offline processing
@@ -23,6 +32,12 @@ public:
    * populate confidence[candidate model] with some value
    */
   int test(PointCloud<PointNormal>::Ptr scene, double *confidence);
+
+  /** print the timing data */
+  void printTimer();
+
+  /** the timer */
+  Timer<NUM_BINS> timer;
 
 };
 

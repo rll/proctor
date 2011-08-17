@@ -41,6 +41,7 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
     FILE *file;
     int vertices, faces, edges;
 
+    // read mesh
     models[mi].id = id;
     snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", base, id / 100, id, id);
     file = fopen(path, "r");
@@ -113,6 +114,8 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
 }
 
 void Proctor::train(Agent &agent) {
+  cout << "[models]" << endl;
+  timer.start();
   PointCloud<PointNormal>::Ptr clouds[num_models];
   for (int mi = 0; mi < num_models; mi++) {
     clouds[mi] = PointCloud<PointNormal>::Ptr(new PointCloud<PointNormal>());
@@ -124,9 +127,12 @@ void Proctor::train(Agent &agent) {
     }
     cout << " finished model " << mi << " (" << models[mi].id << ")" << endl;
   }
-  cout << "start training" << endl;
+  timer.stop(OBTAIN_CLOUD_TRAINING);
+
+  cout << "[training]" << endl;
+  timer.start();
   agent.train(clouds);
-  cout << "finish training" << endl;
+  timer.stop(AGENT_TRAIN);
 }
 
 void Proctor::test(Agent &agent, unsigned int seed) {
@@ -142,27 +148,57 @@ void Proctor::test(Agent &agent, unsigned int seed) {
   }
 
   // run the tests
-  cout << "start testing" << endl;
-  int trace = 0;
+  trace = 0;
   memset(confusion, 0, sizeof(confusion));
   for (int ni = 0; ni < num_trials; ni++) {
-    cout << "--------" << endl;
+    cout << "[test " << ni << "]" << endl;
+    timer.start();
     PointCloud<PointNormal>::Ptr scene = Scanner::getCloud(scenes[ni]);
+    timer.stop(OBTAIN_CLOUD_TESTING);
     cout << "scanned model " << scenes[ni].mi << endl;
+
+    timer.start();
     int guess = agent.test(scene, confidence[ni]);
+    timer.stop(AGENT_TEST);
     cout << "agent guessed " << guess << endl;
+
     confusion[scenes[ni].mi][guess]++;
     if (guess == scenes[ni].mi) trace++;
   }
+}
 
-  // results output
-  // TODO: precision-recall
+void Proctor::printTimer() {
+  printf(
+    "obtain training clouds: %10.3f sec\n"
+    "obtain testing clouds:  %10.3f sec\n"
+    "agent training:         %10.3f sec\n"
+    "agent testing:          %10.3f sec\n",
+    timer[OBTAIN_CLOUD_TRAINING],
+    timer[OBTAIN_CLOUD_TESTING],
+    timer[AGENT_TRAIN],
+    timer[AGENT_TEST]
+  );
+}
+
+void Proctor::printResults(Agent &agent) {
+  // correct percentage
+  printf("[overview]\n");
   printf("%d of %d correct (%.2f%%)\n", trace, num_trials, float(trace) / num_trials * 100);
-  printf("confusion matrix (unscaled):\n");
+
+  // TODO: precision-recall
+
+  // confusion matrix
+  printf("[confusion matrix]\n");
   for (int i = 0; i < num_models; i++) {
     for (int j = 0; j < num_models; j++) {
       printf(" %3d", confusion[i][j]);
     }
     printf("\n");
   }
+
+  // timing
+  printf("[timing]\n");
+  printTimer();
+  printf("[agent timing]\n");
+  agent.printTimer();
 }

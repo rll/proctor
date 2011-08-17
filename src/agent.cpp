@@ -76,7 +76,9 @@ void Agent::train(PointCloud<PointNormal>::Ptr *models) {
     Entry &e = database[mi];
     e.cloud = models[mi];
     e.indices = Proctor::randomSubset(e.cloud->points.size(), 512);
+    timer.start();
     e.features = obtain_features(mi, e.cloud, e.indices);
+    timer.stop(OBTAIN_FEATURES_TRAINING);
     cout << "finished model " << mi << endl;
   }
 }
@@ -85,11 +87,15 @@ int Agent::test(PointCloud<PointNormal>::Ptr scene, double *confidence) {
   Entry e;
   e.cloud = scene;
   e.indices = Proctor::randomSubset(e.cloud->points.size(), 128);
+  timer.start();
   e.features = compute_features(e.cloud, e.indices);
+  timer.stop(COMPUTE_FEATURES_TESTING);
   double best = numeric_limits<double>::infinity();
   int guess = -1;
   for (int mi = 0; mi < Proctor::num_models; mi++) {
+    timer.start();
     confidence[mi] = compute_registration(e, database[mi]);
+    timer.stop(COMPUTE_REGISTRATION);
     cout << mi << ": " << confidence[mi] << endl;
     if (confidence[mi] < best) {
       guess = mi;
@@ -97,4 +103,15 @@ int Agent::test(PointCloud<PointNormal>::Ptr scene, double *confidence) {
     }
   }
   return guess;
+}
+
+void Agent::printTimer() {
+  printf(
+    "obtain training features: %10.3f sec\n"
+    "compute testing features: %10.3f sec\n"
+    "compute registration:     %10.3f sec\n",
+    timer[OBTAIN_FEATURES_TRAINING],
+    timer[COMPUTE_FEATURES_TESTING],
+    timer[COMPUTE_REGISTRATION]
+  );
 }

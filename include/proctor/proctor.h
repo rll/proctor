@@ -7,6 +7,7 @@
 
 #include "proctor/agent.h"
 #include "proctor/scanner.h"
+#include "proctor/timer.h"
 
 using namespace pcl;
 
@@ -21,6 +22,15 @@ public:
     float scale;
   } Model;
 
+  enum TimerBin {
+    OBTAIN_CLOUD_TRAINING,
+    OBTAIN_CLOUD_TESTING,
+    AGENT_TRAIN,
+    AGENT_TEST,
+    NUM_BINS
+  };
+
+  /** return a random indices list; use srand() to influence the output */
   static IndicesPtr randomSubset(int n, int r);
 
   /** read meshes and metadata from disk; this populates models */
@@ -31,6 +41,12 @@ public:
 
   /** generate testing data and pass to agent; this populates scenes, confusion, and confidence */
   void test(Agent &agent, unsigned int seed);
+
+  /** print the timing data */
+  void printTimer();
+
+  /** print the results of testing */
+  void printResults(Agent &agent);
 
   /** how many models to use in training and testing */
   static const int num_models = 4;
@@ -44,7 +60,7 @@ public:
   static const int phi_count = 12;
 
   /** how many times to test the agent */
-  static const int num_trials = 20;
+  static const int num_trials = 1;
 
   // parameters for test scans
   static const float theta_min = 0;
@@ -63,6 +79,12 @@ public:
 
   /** agent's confidence [trial][model candidate] */
   double confidence[num_trials][num_models];
+
+  /** total number of correct guesses */
+  int trace;
+
+  /** the timer */
+  Timer<NUM_BINS> timer;
 
 };
 

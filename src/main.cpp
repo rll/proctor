@@ -13,6 +13,7 @@ int main(int argc, char **argv) {
   Proctor::readModels("/home/pabbeel/wh/benchmark/db", 1814, model_seed);
   proctor.train(agent);
   proctor.test(agent, test_seed);
+  proctor.printResults(agent);
 
   return 0;
 }
