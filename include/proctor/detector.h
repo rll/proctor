@@ -1,5 +1,5 @@
-#ifndef AGENT_H_
-#define AGENT_H_
+#ifndef DETECTOR_H_
+#define DETECTOR_H_
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -9,7 +9,7 @@
 using namespace std;
 using namespace pcl;
 
-class Agent {
+class Detector {
 public:
 
   enum TimerBin {
@@ -31,7 +31,7 @@ public:
    * return guessed model number
    * populate distance[candidate model] with some value
    */
-  int test(PointCloud<PointNormal>::Ptr scene, double *distance);
+  int query(PointCloud<PointNormal>::Ptr scene, double *distance);
 
   /** print the timing data */
   void printTimer();
@@ -41,4 +41,4 @@ public:
 
 };
 
-#endif //#ifndef AGENT_H_
+#endif //#ifndef DETECTOR_H_

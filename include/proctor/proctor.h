@@ -5,7 +5,7 @@
 
 #include <vtkPolyData.h>
 
-#include "proctor/agent.h"
+#include "proctor/detector.h"
 #include "proctor/scanner.h"
 #include "proctor/timer.h"
 
@@ -25,8 +25,8 @@ public:
   enum TimerBin {
     OBTAIN_CLOUD_TRAINING,
     OBTAIN_CLOUD_TESTING,
-    AGENT_TRAIN,
-    AGENT_TEST,
+    DETECTOR_TRAIN,
+    DETECTOR_TEST,
     NUM_BINS
   };
 
@@ -36,11 +36,11 @@ public:
   /** read meshes and metadata from disk; this populates models */
   static void readModels(const char *base, int max_models, unsigned int seed);
 
-  /** load/generate training data and pass to agent */
-  void train(Agent &agent);
+  /** load/generate training data and pass to detector */
+  void train(Detector &detector);
 
-  /** generate testing data and pass to agent; this populates scenes, confusion, and distance */
-  void test(Agent &agent, unsigned int seed);
+  /** generate testing data and pass to detector; this populates scenes, confusion, and distance */
+  void test(Detector &detector, unsigned int seed);
 
   /** compute and print the precision and recall data */
   void printPrecisionRecall();
@@ -49,7 +49,7 @@ public:
   void printTimer();
 
   /** print the results of testing */
-  void printResults(Agent &agent);
+  void printResults(Detector &detector);
 
   /** how many models to use in training and testing */
   static const int num_models = 4;
@@ -62,7 +62,7 @@ public:
   static const float phi_step = M_PI / 6;
   static const int phi_count = 12;
 
-  /** how many times to test the agent */
+  /** how many times to test the detector */
   static const int num_trials = 20;
 
   // parameters for test scans
@@ -77,10 +77,10 @@ public:
   /** the exact parameters used during test() */
   Scanner::Scan scenes[num_trials];
 
-  /** histogram of [scene model][agent guess] */
+  /** histogram of [scene model][detector guess] */
   int confusion[num_models][num_models];
 
-  /** agent's distance ratings [trial][model candidate] */
+  /** detector's distance ratings [trial][model candidate] */
   double distance[num_trials][num_models];
 
   /** total number of correct guesses */

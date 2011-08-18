@@ -1,7 +1,7 @@
-#include "proctor/agent.h"
+#include "proctor/detector.h"
 #include "proctor/proctor.h"
 
-Agent agent;
+Detector detector;
 Proctor proctor;
 
 int main(int argc, char **argv) {
@@ -11,9 +11,9 @@ int main(int argc, char **argv) {
   if (argc >= 3) test_seed = atoi(argv[2]);
 
   Proctor::readModels("/home/pabbeel/wh/benchmark/db", 1814, model_seed);
-  proctor.train(agent);
-  proctor.test(agent, test_seed);
-  proctor.printResults(agent);
+  proctor.train(detector);
+  proctor.test(detector, test_seed);
+  proctor.printResults(detector);
 
   return 0;
 }

@@ -113,7 +113,7 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
   } // end for over models
 }
 
-void Proctor::train(Agent &agent) {
+void Proctor::train(Detector &detector) {
   cout << "[models]" << endl;
   timer.start();
   PointCloud<PointNormal>::Ptr clouds[num_models];
@@ -131,11 +131,11 @@ void Proctor::train(Agent &agent) {
 
   cout << "[training]" << endl;
   timer.start();
-  agent.train(clouds);
-  timer.stop(AGENT_TRAIN);
+  detector.train(clouds);
+  timer.stop(DETECTOR_TRAIN);
 }
 
-void Proctor::test(Agent &agent, unsigned int seed) {
+void Proctor::test(Detector &detector, unsigned int seed) {
   srand(seed);
   const float theta_scale = (theta_max - theta_min) / RAND_MAX;
   const float phi_scale = (phi_max - phi_min) / RAND_MAX;
@@ -158,9 +158,9 @@ void Proctor::test(Agent &agent, unsigned int seed) {
     cout << "scanned model " << scenes[ni].mi << endl;
 
     timer.start();
-    int guess = agent.test(scene, distance[ni]);
-    timer.stop(AGENT_TEST);
-    cout << "agent guessed " << guess << endl;
+    int guess = detector.query(scene, distance[ni]);
+    timer.stop(DETECTOR_TEST);
+    cout << "detector guessed " << guess << endl;
 
     confusion[scenes[ni].mi][guess]++;
     if (guess == scenes[ni].mi) trace++;
@@ -206,16 +206,16 @@ void Proctor::printTimer() {
   printf(
     "obtain training clouds: %10.3f sec\n"
     "obtain testing clouds:  %10.3f sec\n"
-    "agent training:         %10.3f sec\n"
-    "agent testing:          %10.3f sec\n",
+    "detector training:      %10.3f sec\n"
+    "detector testing:       %10.3f sec\n",
     timer[OBTAIN_CLOUD_TRAINING],
     timer[OBTAIN_CLOUD_TESTING],
-    timer[AGENT_TRAIN],
-    timer[AGENT_TEST]
+    timer[DETECTOR_TRAIN],
+    timer[DETECTOR_TEST]
   );
 }
 
-void Proctor::printResults(Agent &agent) {
+void Proctor::printResults(Detector &detector) {
   // correct percentage
   printf("[overview]\n");
   printf("%d of %d correct (%.2f%%)\n", trace, num_trials, float(trace) / num_trials * 100);
@@ -236,6 +236,6 @@ void Proctor::printResults(Agent &agent) {
   // timing
   printf("[timing]\n");
   printTimer();
-  printf("[agent timing]\n");
-  agent.printTimer();
+  printf("[detector timing]\n");
+  detector.printTimer();
 }

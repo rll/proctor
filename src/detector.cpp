@@ -2,7 +2,7 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/registration/icp.h>
 
-#include "proctor/agent.h"
+#include "proctor/detector.h"
 #include "proctor/ia_ransac_sub.h"
 #include "proctor/proctor.h"
 
@@ -70,7 +70,7 @@ double compute_registration(Entry source, Entry target) {
   return icp.getFitnessScore();
 }
 
-void Agent::train(PointCloud<PointNormal>::Ptr *models) {
+void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   srand(time(NULL));
   for (int mi = 0; mi < Proctor::num_models; mi++) {
     Entry &e = database[mi];
@@ -83,7 +83,7 @@ void Agent::train(PointCloud<PointNormal>::Ptr *models) {
   }
 }
 
-int Agent::test(PointCloud<PointNormal>::Ptr scene, double *distance) {
+int Detector::query(PointCloud<PointNormal>::Ptr scene, double *distance) {
   Entry e;
   e.cloud = scene;
   e.indices = Proctor::randomSubset(e.cloud->points.size(), 128);
@@ -105,7 +105,7 @@ int Agent::test(PointCloud<PointNormal>::Ptr scene, double *distance) {
   return guess;
 }
 
-void Agent::printTimer() {
+void Detector::printTimer() {
   printf(
     "obtain training features: %10.3f sec\n"
     "compute testing features: %10.3f sec\n"
