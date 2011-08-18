@@ -10,24 +10,14 @@ Proctor::Model Proctor::models[Proctor::num_models];
 
 IndicesPtr Proctor::randomSubset(int n, int r) {
   IndicesPtr subset (new vector<int>());
-  if (r < n / 2) {
-    vector<int> bag (n);
-    for (int i = 0; i < n; i++) bag[i] = i;
-    int edge = n;
-    subset->resize(r);
-    for (int i = 0; i < r; i++) {
-      int pick = rand() % edge;
-      (*subset)[i] = bag[pick];
-      bag[pick] = bag[--edge];
-    }
-  } else {
-    subset->resize(n);
-    for (int i = 0; i < n; i++) (*subset)[i] = i;
-    for (int edge = n; edge > r; ) {
-      int pick = rand() % edge;
-      (*subset)[pick] = (*subset)[--edge];
-    }
-    subset->resize(r);
+  vector<int> bag (n);
+  for (int i = 0; i < n; i++) bag[i] = i;
+  int edge = n;
+  subset->resize(r);
+  for (int i = 0; i < r; i++) {
+    int pick = rand() % edge;
+    (*subset)[i] = bag[pick];
+    bag[pick] = bag[--edge];
   }
   return subset;
 }
