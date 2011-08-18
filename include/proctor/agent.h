@@ -29,9 +29,9 @@ public:
    * do any online processing
    * scene is a range scan
    * return guessed model number
-   * populate confidence[candidate model] with some value
+   * populate distance[candidate model] with some value
    */
-  int test(PointCloud<PointNormal>::Ptr scene, double *confidence);
+  int test(PointCloud<PointNormal>::Ptr scene, double *distance);
 
   /** print the timing data */
   void printTimer();

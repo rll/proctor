@@ -39,8 +39,11 @@ public:
   /** load/generate training data and pass to agent */
   void train(Agent &agent);
 
-  /** generate testing data and pass to agent; this populates scenes, confusion, and confidence */
+  /** generate testing data and pass to agent; this populates scenes, confusion, and distance */
   void test(Agent &agent, unsigned int seed);
+
+  /** compute and print the precision and recall data */
+  void printPrecisionRecall();
 
   /** print the timing data */
   void printTimer();
@@ -60,7 +63,7 @@ public:
   static const int phi_count = 12;
 
   /** how many times to test the agent */
-  static const int num_trials = 1;
+  static const int num_trials = 20;
 
   // parameters for test scans
   static const float theta_min = 0;
@@ -77,8 +80,8 @@ public:
   /** histogram of [scene model][agent guess] */
   int confusion[num_models][num_models];
 
-  /** agent's confidence [trial][model candidate] */
-  double confidence[num_trials][num_models];
+  /** agent's distance ratings [trial][model candidate] */
+  double distance[num_trials][num_models];
 
   /** total number of correct guesses */
   int trace;

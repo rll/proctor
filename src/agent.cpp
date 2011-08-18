@@ -83,7 +83,7 @@ void Agent::train(PointCloud<PointNormal>::Ptr *models) {
   }
 }
 
-int Agent::test(PointCloud<PointNormal>::Ptr scene, double *confidence) {
+int Agent::test(PointCloud<PointNormal>::Ptr scene, double *distance) {
   Entry e;
   e.cloud = scene;
   e.indices = Proctor::randomSubset(e.cloud->points.size(), 128);
@@ -94,12 +94,12 @@ int Agent::test(PointCloud<PointNormal>::Ptr scene, double *confidence) {
   int guess = -1;
   for (int mi = 0; mi < Proctor::num_models; mi++) {
     timer.start();
-    confidence[mi] = compute_registration(e, database[mi]);
+    distance[mi] = compute_registration(e, database[mi]);
     timer.stop(COMPUTE_REGISTRATION);
-    cout << mi << ": " << confidence[mi] << endl;
-    if (confidence[mi] < best) {
+    cout << mi << ": " << distance[mi] << endl;
+    if (distance[mi] < best) {
       guess = mi;
-      best = confidence[mi];
+      best = distance[mi];
     }
   }
   return guess;

@@ -158,12 +158,47 @@ void Proctor::test(Agent &agent, unsigned int seed) {
     cout << "scanned model " << scenes[ni].mi << endl;
 
     timer.start();
-    int guess = agent.test(scene, confidence[ni]);
+    int guess = agent.test(scene, distance[ni]);
     timer.stop(AGENT_TEST);
     cout << "agent guessed " << guess << endl;
 
     confusion[scenes[ni].mi][guess]++;
     if (guess == scenes[ni].mi) trace++;
+  }
+}
+
+typedef struct {
+  int ni;
+  int mi;
+  double distance;
+} Detection;
+
+bool operator<(const Detection &a, const Detection &b) {
+  return a.distance < b.distance;
+}
+
+void Proctor::printPrecisionRecall() {
+  vector<Detection> detections;
+  detections.reserve(num_trials * num_models);
+  Detection d;
+  for (d.ni = 0; d.ni < num_trials; d.ni++) {
+    for (d.mi = 0; d.mi < num_models; d.mi++) {
+      d.distance = distance[d.ni][d.mi];
+      detections.push_back(d);
+    }
+  }
+  sort(detections.begin(), detections.end());
+  int correct = 0;
+  for (int di = 0; di < detections.size(); di++) {
+    if (detections[di].mi == scenes[detections[di].ni].mi) {
+      correct++;
+      printf(
+        "%.6f %.6f %g\n",
+        double(correct) / double(di + 1),
+        double(correct) / double(num_trials),
+        detections[di].distance
+      );
+    }
   }
 }
 
@@ -185,7 +220,9 @@ void Proctor::printResults(Agent &agent) {
   printf("[overview]\n");
   printf("%d of %d correct (%.2f%%)\n", trace, num_trials, float(trace) / num_trials * 100);
 
-  // TODO: precision-recall
+  // precision-recall
+  printf("[precision-recall]\n");
+  printPrecisionRecall();
 
   // confusion matrix
   printf("[confusion matrix]\n");
