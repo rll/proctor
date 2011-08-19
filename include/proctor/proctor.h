@@ -5,6 +5,7 @@
 
 #include <vtkPolyData.h>
 
+#include "proctor/config.h"
 #include "proctor/detector.h"
 #include "proctor/scanner.h"
 #include "proctor/timer.h"
@@ -51,9 +52,6 @@ public:
   /** print the results of testing */
   void printResults(Detector &detector);
 
-  /** how many models to use in training and testing */
-  static const int num_models = 4;
-
   // parameters for creating registered point cloud
   static const float theta_start = M_PI / 12;
   static const float theta_step = 0;
@@ -62,9 +60,6 @@ public:
   static const float phi_step = M_PI / 6;
   static const int phi_count = 12;
 
-  /** how many times to test the detector */
-  static const int num_trials = 20;
-
   // parameters for test scans
   static const float theta_min = 0;
   static const float theta_max = M_PI / 6;
@@ -72,16 +67,16 @@ public:
   static const float phi_max = M_PI * 2;
 
   /** database of models and metadata */
-  static Model models[num_models];
+  static Model models[Config::num_models];
 
   /** the exact parameters used during test() */
-  Scanner::Scan scenes[num_trials];
+  Scanner::Scan scenes[Config::num_trials];
 
   /** histogram of [scene model][detector guess] */
-  int confusion[num_models][num_models];
+  int confusion[Config::num_models][Config::num_models];
 
   /** detector's distance ratings [trial][model candidate] */
-  double distance[num_trials][num_models];
+  double distance[Config::num_trials][Config::num_models];
 
   /** total number of correct guesses */
   int trace;

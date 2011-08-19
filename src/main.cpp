@@ -11,6 +11,7 @@ int main(int argc, char **argv) {
   if (argc >= 3) test_seed = atoi(argv[2]);
 
   Proctor::readModels("/home/pabbeel/wh/benchmark/db", 1814, model_seed);
+  detector.enableVisualization();
   proctor.train(detector);
   proctor.test(detector, test_seed);
   proctor.printResults(detector);

@@ -6,14 +6,42 @@
 #include "proctor/ia_ransac_sub.h"
 #include "proctor/proctor.h"
 
-/** a cloud and its features */
-typedef struct {
-  PointCloud<PointNormal>::Ptr cloud;
-  IndicesPtr indices;
-  PointCloud<FPFHSignature33>::Ptr features;
-} Entry;
+/** create a viewport for a model and add the model */
+class show_model {
+public:
+  show_model(int mi, PointCloud<PointNormal>::ConstPtr model) : mi(mi), model(model) {}
+  void operator()(visualization::PCLVisualizer &v) {
+    int vp;
+    v.createViewPort(double(mi) / Config::num_models, 0, double(mi + 1) / Config::num_models, 1, vp);
+    {
+      stringstream ss;
+      ss << "model_" << mi;
+      v.addPointCloud(model, visualization::PointCloudColorHandlerCustom<PointNormal>(model, 0xc0, 0x00, 0x40), ss.str(), vp);
+    }
+    {
+      stringstream ss;
+      ss << "aligned_" << mi;
+      v.addPointCloud(model, visualization::PointCloudColorHandlerCustom<PointNormal>(model, 0xc0, 0x00, 0x40), ss.str(), vp);
+    }
+  }
+private:
+  int mi;
+  PointCloud<PointNormal>::ConstPtr model;
+};
 
-Entry database[Proctor::num_models];
+/** show an aligned point cloud in the specified viewport */
+class show_aligned {
+public:
+  show_aligned(int mi, PointCloud<PointNormal>::ConstPtr aligned) : mi(mi), aligned(aligned) {}
+  void operator()(visualization::PCLVisualizer &v) {
+    stringstream ss;
+    ss << "aligned_" << mi;
+    v.updatePointCloud(aligned, visualization::PointCloudColorHandlerCustom<PointNormal>(aligned, 0xff, 0xff, 0xff), ss.str());
+  }
+private:
+  int mi;
+  PointCloud<PointNormal>::ConstPtr aligned;
+};
 
 /** run the feature */
 PointCloud<FPFHSignature33>::Ptr compute_features(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
@@ -44,35 +72,9 @@ PointCloud<FPFHSignature33>::Ptr obtain_features(int mi, PointCloud<PointNormal>
   }
 }
 
-/** run RANSAC and ICP to judge similarity */
-double compute_registration(Entry source, Entry target) {
-  SubsetSAC_IA<PointNormal, PointNormal, FPFHSignature33> ia_ransac_sub;
-  PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
-  ia_ransac_sub.setSourceIndices(source.indices);
-  ia_ransac_sub.setTargetIndices(target.indices);
-  ia_ransac_sub.setMinSampleDistance(0.05);
-  ia_ransac_sub.setMaxCorrespondenceDistance(0.1);
-  ia_ransac_sub.setMaximumIterations(256);
-  ia_ransac_sub.setInputCloud(source.cloud);
-  ia_ransac_sub.setSourceFeatures(source.features);
-  ia_ransac_sub.setInputTarget(target.cloud);
-  ia_ransac_sub.setTargetFeatures(target.features);
-  ia_ransac_sub.align(*aligned);
-  if (ia_ransac_sub.getFitnessScore() > 0.004) return ia_ransac_sub.getFitnessScore();
-
-  IterativeClosestPoint<PointNormal, PointNormal> icp;
-  PointCloud<PointNormal>::Ptr aligned2 (new PointCloud<PointNormal>());
-  icp.setInputCloud(aligned);
-  icp.setInputTarget(target.cloud);
-  icp.setMaxCorrespondenceDistance(0.1);
-  icp.setMaximumIterations(64);
-  icp.align(*aligned2);
-  return icp.getFitnessScore();
-}
-
 void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   srand(time(NULL));
-  for (int mi = 0; mi < Proctor::num_models; mi++) {
+  for (int mi = 0; mi < Config::num_models; mi++) {
     Entry &e = database[mi];
     e.cloud = models[mi];
     e.indices = Proctor::randomSubset(e.cloud->points.size(), 512);
@@ -80,6 +82,7 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
     e.features = obtain_features(mi, e.cloud, e.indices);
     timer.stop(OBTAIN_FEATURES_TRAINING);
     cout << "finished model " << mi << endl;
+    if (vis.get()) vis->runOnVisualizationThreadOnce(show_model(mi, e.cloud));
   }
 }
 
@@ -92,10 +95,8 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, double *distance) {
   timer.stop(COMPUTE_FEATURES_TESTING);
   double best = numeric_limits<double>::infinity();
   int guess = -1;
-  for (int mi = 0; mi < Proctor::num_models; mi++) {
-    timer.start();
-    distance[mi] = compute_registration(e, database[mi]);
-    timer.stop(COMPUTE_REGISTRATION);
+  for (int mi = 0; mi < Config::num_models; mi++) {
+    distance[mi] = computeRegistration(e, mi);
     cout << mi << ": " << distance[mi] << endl;
     if (distance[mi] < best) {
       guess = mi;
@@ -105,13 +106,52 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, double *distance) {
   return guess;
 }
 
+void Detector::enableVisualization() {
+  vis.reset(new visualization::CloudViewer("Detector Visualization"));
+}
+
 void Detector::printTimer() {
   printf(
     "obtain training features: %10.3f sec\n"
     "compute testing features: %10.3f sec\n"
-    "compute registration:     %10.3f sec\n",
+    "RANSAC:                   %10.3f sec\n"
+    "ICP:                      %10.3f sec\n",
     timer[OBTAIN_FEATURES_TRAINING],
     timer[COMPUTE_FEATURES_TESTING],
-    timer[COMPUTE_REGISTRATION]
+    timer[RANSAC],
+    timer[ICP]
   );
+}
+
+double Detector::computeRegistration(Entry &source, int mi) {
+  Entry &target = database[mi];
+
+  timer.start();
+  SubsetSAC_IA<PointNormal, PointNormal, FPFHSignature33> ia_ransac_sub;
+  PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
+  ia_ransac_sub.setSourceIndices(source.indices);
+  ia_ransac_sub.setTargetIndices(target.indices);
+  ia_ransac_sub.setMinSampleDistance(0.05);
+  ia_ransac_sub.setMaxCorrespondenceDistance(0.1);
+  ia_ransac_sub.setMaximumIterations(256);
+  ia_ransac_sub.setInputCloud(source.cloud);
+  ia_ransac_sub.setSourceFeatures(source.features);
+  ia_ransac_sub.setInputTarget(target.cloud);
+  ia_ransac_sub.setTargetFeatures(target.features);
+  ia_ransac_sub.align(*aligned);
+  if (vis.get()) vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned));
+  if (ia_ransac_sub.getFitnessScore() > 0.006) return ia_ransac_sub.getFitnessScore();
+  timer.stop(RANSAC);
+
+  timer.start();
+  IterativeClosestPoint<PointNormal, PointNormal> icp;
+  PointCloud<PointNormal>::Ptr aligned2 (new PointCloud<PointNormal>());
+  icp.setInputCloud(aligned);
+  icp.setInputTarget(target.cloud);
+  icp.setMaxCorrespondenceDistance(0.1);
+  icp.setMaximumIterations(64);
+  icp.align(*aligned2);
+  timer.stop(ICP);
+  if (vis.get()) vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned2));
+  return icp.getFitnessScore();
 }

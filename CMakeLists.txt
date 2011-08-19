@@ -15,4 +15,4 @@ find_package(VTK 5.8 REQUIRED)
 include(${VTK_USE_FILE})
 
 add_executable(main src/main.cpp src/detector.cpp src/proctor.cpp src/scanner.cpp)
-target_link_libraries(main ${FLANN_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_IO_LIBRARIES} vtkCommon vtkFiltering vtkGraphics vtkIO)
+target_link_libraries(main ${FLANN_LIBRARIES} ${PCL_COMMON_LIBRARIES} ${PCL_FEATURES_LIBRARIES} ${PCL_IO_LIBRARIES} ${PCL_VISUALIZATION_LIBRARIES} vtkCommon vtkFiltering vtkGraphics vtkIO)

@@ -6,7 +6,7 @@
 
 #include "proctor/proctor.h"
 
-Proctor::Model Proctor::models[Proctor::num_models];
+Proctor::Model Proctor::models[Config::num_models];
 
 IndicesPtr Proctor::randomSubset(int n, int r) {
   IndicesPtr subset (new vector<int>());
@@ -24,8 +24,8 @@ IndicesPtr Proctor::randomSubset(int n, int r) {
 
 void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
   srand(seed);
-  IndicesPtr model_subset = randomSubset(max_models, num_models);
-  for (int mi = 0; mi < num_models; mi++) {
+  IndicesPtr model_subset = randomSubset(max_models, Config::num_models);
+  for (int mi = 0; mi < Config::num_models; mi++) {
     int id = (*model_subset)[mi];
     char path[256];
     FILE *file;
@@ -106,8 +106,8 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
 void Proctor::train(Detector &detector) {
   cout << "[models]" << endl;
   timer.start();
-  PointCloud<PointNormal>::Ptr clouds[num_models];
-  for (int mi = 0; mi < num_models; mi++) {
+  PointCloud<PointNormal>::Ptr clouds[Config::num_models];
+  for (int mi = 0; mi < Config::num_models; mi++) {
     clouds[mi] = PointCloud<PointNormal>::Ptr(new PointCloud<PointNormal>());
     for (int ti = 0; ti < theta_count; ti++) {
       for (int pi = 0; pi < phi_count; pi++) {
@@ -131,8 +131,8 @@ void Proctor::test(Detector &detector, unsigned int seed) {
   const float phi_scale = (phi_max - phi_min) / RAND_MAX;
 
   // prepare test vectors in advance
-  for (int ni = 0; ni < num_trials; ni++) {
-    scenes[ni].mi = rand() % num_models;
+  for (int ni = 0; ni < Config::num_trials; ni++) {
+    scenes[ni].mi = rand() % Config::num_models;
     scenes[ni].theta = theta_min + rand() * theta_scale;
     scenes[ni].phi = phi_min + rand() * phi_scale;
   }
@@ -140,7 +140,7 @@ void Proctor::test(Detector &detector, unsigned int seed) {
   // run the tests
   trace = 0;
   memset(confusion, 0, sizeof(confusion));
-  for (int ni = 0; ni < num_trials; ni++) {
+  for (int ni = 0; ni < Config::num_trials; ni++) {
     cout << "[test " << ni << "]" << endl;
     timer.start();
     PointCloud<PointNormal>::Ptr scene = Scanner::getCloud(scenes[ni]);
@@ -169,10 +169,10 @@ bool operator<(const Detection &a, const Detection &b) {
 
 void Proctor::printPrecisionRecall() {
   vector<Detection> detections;
-  detections.reserve(num_trials * num_models);
+  detections.reserve(Config::num_trials * Config::num_models);
   Detection d;
-  for (d.ni = 0; d.ni < num_trials; d.ni++) {
-    for (d.mi = 0; d.mi < num_models; d.mi++) {
+  for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
+    for (d.mi = 0; d.mi < Config::num_models; d.mi++) {
       d.distance = distance[d.ni][d.mi];
       detections.push_back(d);
     }
@@ -185,7 +185,7 @@ void Proctor::printPrecisionRecall() {
       printf(
         "%.6f %.6f %g\n",
         double(correct) / double(di + 1),
-        double(correct) / double(num_trials),
+        double(correct) / double(Config::num_trials),
         detections[di].distance
       );
     }
@@ -208,7 +208,7 @@ void Proctor::printTimer() {
 void Proctor::printResults(Detector &detector) {
   // correct percentage
   printf("[overview]\n");
-  printf("%d of %d correct (%.2f%%)\n", trace, num_trials, float(trace) / num_trials * 100);
+  printf("%d of %d correct (%.2f%%)\n", trace, Config::num_trials, float(trace) / Config::num_trials * 100);
 
   // precision-recall
   printf("[precision-recall]\n");
@@ -216,8 +216,8 @@ void Proctor::printResults(Detector &detector) {
 
   // confusion matrix
   printf("[confusion matrix]\n");
-  for (int i = 0; i < num_models; i++) {
-    for (int j = 0; j < num_models; j++) {
+  for (int i = 0; i < Config::num_models; i++) {
+    for (int j = 0; j < Config::num_models; j++) {
       printf(" %3d", confusion[i][j]);
     }
     printf("\n");
