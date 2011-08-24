@@ -43,6 +43,22 @@ private:
   PointCloud<PointNormal>::ConstPtr aligned;
 };
 
+class visualization_callback {
+public:
+  visualization_callback(int mi, visualization::CloudViewer *vis) : mi(mi), vis(vis) {}
+  void operator()(const PointCloud<PointNormal> &cloud_src,
+                  const vector<int> &indices_src,
+                  const PointCloud<PointNormal> &cloud_tgt,
+                  const vector<int> &indices_tgt) {
+    // make a copy of the cloud. expensive.
+    PointCloud<PointNormal>::ConstPtr aligned (new PointCloud<PointNormal>(cloud_src));
+    vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned));
+  }
+private:
+  int mi;
+  visualization::CloudViewer *vis;
+};
+
 /** run the feature */
 PointCloud<FPFHSignature33>::Ptr compute_features(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
   PointCloud<FPFHSignature33>::Ptr features (new PointCloud<FPFHSignature33>());
@@ -125,6 +141,10 @@ void Detector::printTimer() {
 
 double Detector::computeRegistration(Entry &source, int mi) {
   Entry &target = database[mi];
+  typedef boost::function<void(const PointCloud<PointNormal> &cloud_src,
+                               const vector<int> &indices_src,
+                               const PointCloud<PointNormal> &cloud_tgt,
+                               const vector<int> &indices_tgt)> f;
 
   timer.start();
   SubsetSAC_IA<PointNormal, PointNormal, FPFHSignature33> ia_ransac_sub;
@@ -132,14 +152,17 @@ double Detector::computeRegistration(Entry &source, int mi) {
   ia_ransac_sub.setSourceIndices(source.indices);
   ia_ransac_sub.setTargetIndices(target.indices);
   ia_ransac_sub.setMinSampleDistance(0.05);
-  ia_ransac_sub.setMaxCorrespondenceDistance(0.1);
+  ia_ransac_sub.setMaxCorrespondenceDistance(0.5);
   ia_ransac_sub.setMaximumIterations(256);
   ia_ransac_sub.setInputCloud(source.cloud);
   ia_ransac_sub.setSourceFeatures(source.features);
   ia_ransac_sub.setInputTarget(target.cloud);
   ia_ransac_sub.setTargetFeatures(target.features);
+  if (vis.get()) {
+    f updater (visualization_callback(mi, vis.get()));
+    ia_ransac_sub.registerVisualizationCallback(updater);
+  }
   ia_ransac_sub.align(*aligned);
-  if (vis.get()) vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned));
   if (ia_ransac_sub.getFitnessScore() > 0.006) return ia_ransac_sub.getFitnessScore();
   timer.stop(RANSAC);
 
@@ -150,8 +173,11 @@ double Detector::computeRegistration(Entry &source, int mi) {
   icp.setInputTarget(target.cloud);
   icp.setMaxCorrespondenceDistance(0.1);
   icp.setMaximumIterations(64);
+  if (vis.get()) {
+    f updater (visualization_callback(mi, vis.get()));
+    icp.registerVisualizationCallback(updater);
+  }
   icp.align(*aligned2);
   timer.stop(ICP);
-  if (vis.get()) vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned2));
   return icp.getFitnessScore();
 }

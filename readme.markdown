@@ -75,7 +75,7 @@ This class provides a layer of abstraction over mesh-to-cloud conversion. The cu
 This program depends on the following:
 
 * CMake 2.6 
-* PCL 1.1.0 modified
+* PCL 1.2.0 modified
 * Eigen3
 * VTK 5.8
 

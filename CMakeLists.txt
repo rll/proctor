@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 # PCL has modules that find Flann and Eigen
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} /home/pabbeel/wh/PCL-1.1.0-Source/build /home/pabbeel/wh/PCL-1.1.0-Source/cmake/Modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} /home/pabbeel/wh/pcl-trunk/build /home/pabbeel/wh/pcl-trunk/cmake/Modules)
 
 include_directories(${PROJECT_SOURCE_DIR}/include)
 

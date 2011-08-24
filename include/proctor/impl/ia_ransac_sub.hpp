@@ -133,6 +133,10 @@ computeTransformation (PointCloudSource &output)
     {
       lowest_error = error;
       final_transformation_ = transformation_;
+      if (update_visualizer_ != 0)
+      {
+        update_visualizer_(input_transformed, sample_indices_cloud, *target_, corresponding_indices_cloud );
+      }
     }
   }
 
