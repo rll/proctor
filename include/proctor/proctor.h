@@ -46,6 +46,9 @@ public:
   /** compute and print the precision and recall data */
   void printPrecisionRecall();
 
+  /** compute and print classifier performance data */
+  void printClassifierStats();
+
   /** print the timing data */
   void printTimer();
 
@@ -75,8 +78,11 @@ public:
   /** histogram of [scene model][detector guess] */
   int confusion[Config::num_models][Config::num_models];
 
-  /** detector's distance ratings [trial][model candidate] */
-  double distance[Config::num_trials][Config::num_models];
+  /** detector's classification similarity ratings [trial][model candidate] */
+  float classifier[Config::num_trials][Config::num_models];
+
+  /** detector's registration distance ratings [trial][model candidate] */
+  double registration[Config::num_trials][Config::num_models];
 
   /** total number of correct guesses */
   int trace;

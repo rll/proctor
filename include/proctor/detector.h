@@ -3,6 +3,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
+#include <pcl/kdtree/kdtree.h>
 #include <pcl/visualization/cloud_viewer.h>
 
 #include "proctor/config.h"
@@ -14,6 +15,16 @@ using namespace pcl;
 class Detector {
 public:
 
+  // these will be removed when we switch to dense
+  static const int model_points = 512;
+  static const int scene_points = 128;
+
+  /** each feature point can vote for up to this many models */
+  static const int max_votes = 5;
+
+  /** run the registration on this many models */
+  static const int num_registration = 4;
+
   enum TimerBin {
     OBTAIN_FEATURES_TRAINING,
     COMPUTE_FEATURES_TESTING,
@@ -22,11 +33,13 @@ public:
     NUM_BINS
   };
 
+  typedef FPFHSignature33 Signature;
+
   /** a cloud and its features */
   typedef struct {
     PointCloud<PointNormal>::Ptr cloud;
     IndicesPtr indices;
-    PointCloud<FPFHSignature33>::Ptr features;
+    PointCloud<Signature>::Ptr features;
   } Entry;
 
   Entry database[Config::num_models];
@@ -41,9 +54,10 @@ public:
    * do any online processing
    * scene is a range scan
    * return guessed model number
-   * populate distance[candidate model] with some value
+   * populate classifier[candidate model] with a similarity score (higher is better)
+   * populate registration[candidate model] with a distance score (lower is better, but 0 means didn't try)
    */
-  int query(PointCloud<PointNormal>::Ptr scene, double *distance);
+  int query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration);
 
   /** start a visualizer; if called, must be called before training/querying */
   void enableVisualization();
@@ -56,10 +70,18 @@ public:
 
 private:
 
+  /** run the feature */
+  PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
+
+  /** try to load the features from disk, or do it from scratch. for training only */
+  PointCloud<Signature>::Ptr obtainFeatures(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
+
   /** run RANSAC and ICP to judge similarity */
-  double computeRegistration(Entry &source, int mi);
+  double computeRegistration(Entry &source, int mi, int ci);
 
   auto_ptr<visualization::CloudViewer> vis;
+
+  KdTree<Signature>::Ptr tree;
 
 };
 

@@ -6,117 +6,156 @@
 #include "proctor/ia_ransac_sub.h"
 #include "proctor/proctor.h"
 
-/** create a viewport for a model and add the model */
-class show_model {
+/** create the viewports to be used by top candidates */
+class create_viewports {
 public:
-  show_model(int mi, PointCloud<PointNormal>::ConstPtr model) : mi(mi), model(model) {}
+  create_viewports(PointCloud<PointNormal>::ConstPtr sentinel) : sentinel(sentinel) {}
   void operator()(visualization::PCLVisualizer &v) {
-    int vp;
-    v.createViewPort(double(mi) / Config::num_models, 0, double(mi + 1) / Config::num_models, 1, vp);
-    {
-      stringstream ss;
-      ss << "model_" << mi;
-      v.addPointCloud(model, visualization::PointCloudColorHandlerCustom<PointNormal>(model, 0xc0, 0x00, 0x40), ss.str(), vp);
-    }
-    {
-      stringstream ss;
-      ss << "aligned_" << mi;
-      v.addPointCloud(model, visualization::PointCloudColorHandlerCustom<PointNormal>(model, 0xc0, 0x00, 0x40), ss.str(), vp);
+    for (int ci = 0; ci < Detector::num_registration; ci++) {
+      int vp;
+      v.createViewPort(double(ci) / Detector::num_registration, 0, double(ci + 1) / Detector::num_registration, 1, vp);
+      {
+        stringstream ss;
+        ss << "candidate_" << ci;
+        v.addPointCloud(sentinel, visualization::PointCloudColorHandlerCustom<PointNormal>(sentinel, 0xc0, 0x00, 0x40), ss.str(), vp);
+      }
+      {
+        stringstream ss;
+        ss << "aligned_" << ci;
+        v.addPointCloud(sentinel, visualization::PointCloudColorHandlerCustom<PointNormal>(sentinel, 0xc0, 0x00, 0x40), ss.str(), vp);
+      }
     }
   }
 private:
-  int mi;
-  PointCloud<PointNormal>::ConstPtr model;
+  PointCloud<PointNormal>::ConstPtr sentinel;
+};
+
+/** show a candidate model as the specified candidate */
+class show_candidate {
+public:
+  show_candidate(int ci, PointCloud<PointNormal>::ConstPtr candidate) : ci(ci), candidate(candidate) {}
+  void operator()(visualization::PCLVisualizer &v) {
+    {
+      stringstream ss;
+      ss << "candidate_" << ci;
+      v.updatePointCloud(candidate, visualization::PointCloudColorHandlerCustom<PointNormal>(candidate, 0xc0, 0x00, 0x40), ss.str());
+    }
+    {
+      stringstream ss;
+      ss << "aligned_" << ci;
+      v.updatePointCloud(candidate, visualization::PointCloudColorHandlerCustom<PointNormal>(candidate, 0xc0, 0x00, 0x40), ss.str());
+    }
+  }
+private:
+  int ci;
+  PointCloud<PointNormal>::ConstPtr candidate;
 };
 
 /** show an aligned point cloud in the specified viewport */
 class show_aligned {
 public:
-  show_aligned(int mi, PointCloud<PointNormal>::ConstPtr aligned) : mi(mi), aligned(aligned) {}
+  show_aligned(int ci, PointCloud<PointNormal>::ConstPtr aligned) : ci(ci), aligned(aligned) {}
   void operator()(visualization::PCLVisualizer &v) {
     stringstream ss;
-    ss << "aligned_" << mi;
+    ss << "aligned_" << ci;
     v.updatePointCloud(aligned, visualization::PointCloudColorHandlerCustom<PointNormal>(aligned, 0xff, 0xff, 0xff), ss.str());
   }
 private:
-  int mi;
+  int ci;
   PointCloud<PointNormal>::ConstPtr aligned;
 };
 
 class visualization_callback {
 public:
-  visualization_callback(int mi, visualization::CloudViewer *vis) : mi(mi), vis(vis) {}
+  visualization_callback(int ci, visualization::CloudViewer *vis) : ci(ci), vis(vis) {}
   void operator()(const PointCloud<PointNormal> &cloud_src,
                   const vector<int> &indices_src,
                   const PointCloud<PointNormal> &cloud_tgt,
                   const vector<int> &indices_tgt) {
     // make a copy of the cloud. expensive.
     PointCloud<PointNormal>::ConstPtr aligned (new PointCloud<PointNormal>(cloud_src));
-    vis->runOnVisualizationThreadOnce(show_aligned(mi, aligned));
+    vis->runOnVisualizationThreadOnce(show_aligned(ci, aligned));
   }
 private:
-  int mi;
+  int ci;
   visualization::CloudViewer *vis;
 };
 
-/** run the feature */
-PointCloud<FPFHSignature33>::Ptr compute_features(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
-  PointCloud<FPFHSignature33>::Ptr features (new PointCloud<FPFHSignature33>());
-  FPFHEstimation<PointNormal, PointNormal, FPFHSignature33> fpfh;
-  fpfh.setRadiusSearch(0.1);
-  fpfh.setInputCloud(cloud);
-  fpfh.setIndices(indices);
-  KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
-  fpfh.setSearchMethod(kdt);
-  fpfh.setInputNormals(cloud);
-  fpfh.compute(*features);
-  return features;
-}
-
-/** try to load the features from disk, or do it from scratch. for training only */
-PointCloud<FPFHSignature33>::Ptr obtain_features(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
-  char name[17];
-  sprintf(name, "feature_%04d.pcd", Proctor::models[mi].id);
-  if (ifstream(name)) {
-    PointCloud<FPFHSignature33>::Ptr features (new PointCloud<FPFHSignature33>());
-    io::loadPCDFile(name, *features);
-    return features;
-  } else {
-    PointCloud<FPFHSignature33>::Ptr features = compute_features(cloud, indices);
-    io::savePCDFile(name, *features);
-    return features;
-  }
-}
-
 void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   srand(time(NULL));
+  PointCloud<Signature>::Ptr features (new PointCloud<Signature>);
   for (int mi = 0; mi < Config::num_models; mi++) {
     Entry &e = database[mi];
     e.cloud = models[mi];
-    e.indices = Proctor::randomSubset(e.cloud->points.size(), 512);
+    e.indices = Proctor::randomSubset(e.cloud->points.size(), model_points);
     timer.start();
-    e.features = obtain_features(mi, e.cloud, e.indices);
+    e.features = obtainFeatures(mi, e.cloud, e.indices);
     timer.stop(OBTAIN_FEATURES_TRAINING);
+    *features += *e.features;
     cout << "finished model " << mi << endl;
-    if (vis.get()) vis->runOnVisualizationThreadOnce(show_model(mi, e.cloud));
   }
+  tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
+  tree->setInputCloud(features);
 }
 
-int Detector::query(PointCloud<PointNormal>::Ptr scene, double *distance) {
+typedef struct {
+  int mi;
+  float votes;
+} Candidate;
+
+bool operator<(const Candidate &a, const Candidate &b) {
+  return a.votes > b.votes; // sort descending
+}
+
+int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration) {
   Entry e;
   e.cloud = scene;
-  e.indices = Proctor::randomSubset(e.cloud->points.size(), 128);
+  e.indices = Proctor::randomSubset(e.cloud->points.size(), scene_points);
   timer.start();
-  e.features = compute_features(e.cloud, e.indices);
+  e.features = computeFeatures(e.cloud, e.indices);
   timer.stop(COMPUTE_FEATURES_TESTING);
+  // let each point cast votes
+  memset(classifier, 0, Config::num_models * sizeof(*classifier));
+  for (int pi = 0; pi < e.indices->size(); pi++) {
+    vector<int> indices;
+    vector<float> distances;
+    tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
+    for (int ri = 0; ri < max_votes; ri++) {
+      // do a linear search to determine which model
+      // this will make sense when we switch to dense
+      int index = indices[ri];
+      int mi;
+      for (mi = 0; mi < Config::num_models; mi++) {
+        if (index < database[mi].indices->size()) break;
+        index -= database[mi].indices->size();
+      }
+      // TODO: is this appropriate weighting?
+      classifier[mi] += 1. / distances[ri];
+    }
+  }
+  // get top candidates
+  vector<Candidate> ballot(Config::num_models);
+  for (int mi = 0; mi < Config::num_models; mi++) {
+    ballot[mi].mi = mi;
+    ballot[mi].votes = classifier[mi];
+  }
+  partial_sort(ballot.begin(), ballot.begin() + num_registration, ballot.end());
+  if (vis.get()) {
+    for (int ci = 0; ci < num_registration; ci++) {
+      vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
+    }
+  }
+  // run registration on top candidates
+  memset(registration, 0, Config::num_models * sizeof(*registration));
   double best = numeric_limits<double>::infinity();
   int guess = -1;
-  for (int mi = 0; mi < Config::num_models; mi++) {
-    distance[mi] = computeRegistration(e, mi);
-    cout << mi << ": " << distance[mi] << endl;
-    if (distance[mi] < best) {
+  for (int ci = 0; ci < num_registration; ci++) {
+    int mi = ballot[ci].mi;
+    registration[mi] = computeRegistration(e, mi, ci);
+    cout << mi << ": " << registration[mi] << endl;
+    if (registration[mi] < best) {
       guess = mi;
-      best = distance[mi];
+      best = registration[mi];
     }
   }
   return guess;
@@ -124,6 +163,9 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, double *distance) {
 
 void Detector::enableVisualization() {
   vis.reset(new visualization::CloudViewer("Detector Visualization"));
+  PointCloud<PointNormal>::Ptr sentinel (new PointCloud<PointNormal>());
+  sentinel->points.push_back(PointNormal());
+  vis->runOnVisualizationThreadOnce(create_viewports(sentinel));
 }
 
 void Detector::printTimer() {
@@ -139,7 +181,34 @@ void Detector::printTimer() {
   );
 }
 
-double Detector::computeRegistration(Entry &source, int mi) {
+PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
+  PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
+  FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
+  fpfh.setRadiusSearch(0.1);
+  fpfh.setInputCloud(cloud);
+  fpfh.setIndices(indices);
+  KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
+  fpfh.setSearchMethod(kdt);
+  fpfh.setInputNormals(cloud);
+  fpfh.compute(*features);
+  return features;
+}
+
+PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
+  char name[17];
+  sprintf(name, "feature_%04d.pcd", Proctor::models[mi].id);
+  if (ifstream(name)) {
+    PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
+    io::loadPCDFile(name, *features);
+    return features;
+  } else {
+    PointCloud<Signature>::Ptr features = computeFeatures(cloud, indices);
+    io::savePCDFileBinary(name, *features);
+    return features;
+  }
+}
+
+double Detector::computeRegistration(Entry &source, int mi, int ci) {
   Entry &target = database[mi];
   typedef boost::function<void(const PointCloud<PointNormal> &cloud_src,
                                const vector<int> &indices_src,
@@ -147,7 +216,7 @@ double Detector::computeRegistration(Entry &source, int mi) {
                                const vector<int> &indices_tgt)> f;
 
   timer.start();
-  SubsetSAC_IA<PointNormal, PointNormal, FPFHSignature33> ia_ransac_sub;
+  SubsetSAC_IA<PointNormal, PointNormal, Signature> ia_ransac_sub;
   PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
   ia_ransac_sub.setSourceIndices(source.indices);
   ia_ransac_sub.setTargetIndices(target.indices);
@@ -159,7 +228,7 @@ double Detector::computeRegistration(Entry &source, int mi) {
   ia_ransac_sub.setInputTarget(target.cloud);
   ia_ransac_sub.setTargetFeatures(target.features);
   if (vis.get()) {
-    f updater (visualization_callback(mi, vis.get()));
+    f updater (visualization_callback(ci, vis.get()));
     ia_ransac_sub.registerVisualizationCallback(updater);
   }
   ia_ransac_sub.align(*aligned);
@@ -174,7 +243,7 @@ double Detector::computeRegistration(Entry &source, int mi) {
   icp.setMaxCorrespondenceDistance(0.1);
   icp.setMaximumIterations(64);
   if (vis.get()) {
-    f updater (visualization_callback(mi, vis.get()));
+    f updater (visualization_callback(ci, vis.get()));
     icp.registerVisualizationCallback(updater);
   }
   icp.align(*aligned2);

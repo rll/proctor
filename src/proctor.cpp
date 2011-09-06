@@ -148,7 +148,7 @@ void Proctor::test(Detector &detector, unsigned int seed) {
     cout << "scanned model " << scenes[ni].mi << endl;
 
     timer.start();
-    int guess = detector.query(scene, distance[ni]);
+    int guess = detector.query(scene, classifier[ni], registration[ni]);
     timer.stop(DETECTOR_TEST);
     cout << "detector guessed " << guess << endl;
 
@@ -169,11 +169,11 @@ bool operator<(const Detection &a, const Detection &b) {
 
 void Proctor::printPrecisionRecall() {
   vector<Detection> detections;
-  detections.reserve(Config::num_trials * Config::num_models);
   Detection d;
   for (d.ni = 0; d.ni < Config::num_trials; d.ni++) {
     for (d.mi = 0; d.mi < Config::num_models; d.mi++) {
-      d.distance = distance[d.ni][d.mi];
+      d.distance = registration[d.ni][d.mi];
+      if (!d.distance) continue; // did not attempt registration on this model
       detections.push_back(d);
     }
   }
@@ -190,6 +190,27 @@ void Proctor::printPrecisionRecall() {
       );
     }
   }
+}
+
+void Proctor::printClassifierStats() {
+  float avg = 0; // average rank of correct id
+  int area = 0; // area under curve of cumulative histogram
+  for (int ni = 0; ni < Config::num_trials; ni++) {
+    int answer = scenes[ni].mi;
+    float votes = classifier[ni][answer];
+    // figure out the rank in this trial
+    int rank = 1;
+    for (int mi = 0; mi < Config::num_models; mi++) {
+      if (classifier[ni][mi] > votes) rank++;
+    }
+    // contribute to average rank
+    avg += rank;
+    // contribute to area under curve
+    area += Config::num_models - rank + 1;
+  }
+  avg /= Config::num_trials;
+  printf("average classifier rank:                          %0.2f\n", avg);
+  printf("area under curve of cumulative histogram of rank: %d\n", area);
 }
 
 void Proctor::printTimer() {
@@ -213,6 +234,10 @@ void Proctor::printResults(Detector &detector) {
   // precision-recall
   printf("[precision-recall]\n");
   printPrecisionRecall();
+
+  // classifier stats
+  printf("[classifier stats]\n");
+  printClassifierStats();
 
   // confusion matrix
   printf("[confusion matrix]\n");

@@ -100,7 +100,7 @@ PointCloud<PointNormal>::Ptr Scanner::getCloudCached(int mi, int ti, int pi) {
     return cloud;
   } else {
     PointCloud<PointNormal>::Ptr cloud = getCloud(scan);
-    io::savePCDFile(name, *cloud);
+    io::savePCDFileBinary(name, *cloud);
     return cloud;
   }
 }
