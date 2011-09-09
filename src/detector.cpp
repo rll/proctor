@@ -87,6 +87,7 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   for (int mi = 0; mi < Config::num_models; mi++) {
     Entry &e = database[mi];
     e.cloud = models[mi];
+    // TODO: replace this with UniformSampling
     e.indices = Proctor::randomSubset(e.cloud->points.size(), model_points);
     timer.start();
     e.features = obtainFeatures(mi, e.cloud, e.indices);
