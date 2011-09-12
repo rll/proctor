@@ -15,15 +15,20 @@
 % on the last page of the document
 
 % The following packages can be found on http:\\www.ctan.org
-%\usepackage{graphics} % for pdf, bitmapped graphics files
+\usepackage{graphics} % for pdf, bitmapped graphics files
 %\usepackage{epsfig} % for postscript graphics files
 %\usepackage{mathptmx} % assumes new font selection scheme installed
-%\usepackage{times} % assumes new font selection scheme installed
+\usepackage{times} % assumes new font selection scheme installed
 %\usepackage{amsmath} % assumes amsmath package installed
 %\usepackage{amssymb}  % assumes amsmath package installed
 
+\usepackage{color}
+
+
+\newcommand{\note}[1]{\textcolor{red}{\textbf{#1}}}
+
 \title{\LARGE \bf
-A Framework for Evaluating 3-D Recognition
+Proctor: Evaluating 3-D Recognition
 }
 
 %\author{ \parbox{3 in}{\centering Huibert Kwakernaak*
@@ -54,12 +59,9 @@ A Framework for Evaluating 3-D Recognition
 
 \begin{document}
 
-
-
 \maketitle
 \thispagestyle{empty}
 \pagestyle{empty}
-
 
 \begin{abstract}
 
