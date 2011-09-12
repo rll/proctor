@@ -79,52 +79,22 @@ We hope that this becomes a standard evaluation for future featurizations for 3-
 
 \input{intro_and_related_work.tex}
 
-\section{ARCHITECTURE AND IMPLEMENTATION}
-* describe the Proctor code
+\input{architecture.tex}
 
-* synthetic approach, voting, kdTree stuff, PCL
-
-\section{EVALUATION}
-
-* provides the first results tables
-* table per dataset
-* features vs. metrics
-
-* plots of the same data that's in the tables?
-
-* confusion matrix figures
-
-* table of timing results
-
-\begin{table}
-\caption{An Example of a Table}
-\label{table_example}
-\begin{center}
-\begin{tabular}{|c||c|}
-\hline
-One & Two\\
-\hline
-Three & Four\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-\begin{figure}[thpb]
-   \centering
-   %\includegraphics[scale=1.0]{figurefile}
-   \caption{Inductance of oscillation winding on amorphous
-    magnetic core versus DC bias magnetic field}
-   \label{figurelabel}
-\end{figure}
+\input{evaluation.tex}
 
 \section{COMMUNITY AND FUTURE PLANS}
 
-Open source stuff.
+This paper describes the motivation for a standard 3-D recognition pipeline evaluation framework and explains our choices for the particular components of our implementation.
+We hope that future work in 3-D feature detection, description, or subsequent recognition or pose estimation mechanisms will base itself on this framework.
+The project of a general, modular 3-D preception evaluation framework is tremendous, and would benefit from code and testing contributions as much as its existence benefits researchers in these areas.
+Therefore we have provided all code and documentation open-source, and welcome contributions at \note{nice url here}.
 
-\section{ACKNOWLEDGMENTS}
+\note{more about next steps?}
 
-The authors gratefully acknowledge the contribution of National Research Organization and reviewers' comments.
+% \section{ACKNOWLEDGMENTS}
+% 
+% The authors gratefully acknowledge the contribution of National Research Organization and reviewers' comments.
 
 {\small
 \bibliographystyle{ieee}
