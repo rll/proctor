@@ -1,7 +1,23 @@
+%!TEX root=./report.tex
 \section{EVALUATION}
 
-* provides the first results tables
+\subsection{Evaluation Metrics}
+As a reminder, our task is identifying the correct object model from a large database, given a scan of a model in an uncluttered scene.
+
+We evaluate the correctness of our results with the following metrics:
+\begin{itemize}
+  \item Percentage of top-K guesses correct (where K=1?)
+  \item Area under the cumulative result-within-top-K histogram and maybe some plots
+  \item Confusion matrix for top-K
+  \item precision-recall plots (and the average precision := area under the PR curve)
+\end{itemize}
+
+An additional important evaluation is the runtime performance of different methods.
+Hence, we report timing results, split by the different stages of our pipeline, for all experimental conditions.
+In all cases, the tests were run on a \note{fill in hardware specs here}.
+
 * table per dataset
+
 * features vs. metrics
 
 * plots of the same data that's in the tables?

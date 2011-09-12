@@ -1,5 +1,4 @@
 %!TEX root=./report.tex
-
 \section{INTRODUCTION}
 Research in robotics and computer vision has long considered the use of 3-D point clouds as a rich source of information about the world.
 Throughout the history of research, the recognition methods and features considered have shared ideas--from early work on retrieving 3-D shape models to integrating 2-D and 3-D percepts to human pose estimation.
@@ -12,9 +11,28 @@ The PR-2 \note{citation?} has facilitated rapid progress in personal robotics re
 Our system, Proctor, aims for the same kind of impact in 3-D features, and classification and pose estimation methods research.
 
 \section{RELATED WORK}
-\note{Mostly lifted from B3DO paper, and should be reworded}
 
-\subsection{3D and 2D/3D Recognition}
+A full accounting of all 3-D perception tasks would not be possible given our format.
+Concisely, common 3-D perception tasks can be sorted among several dimensions.
+
+Given a database and a view, our task may be to:
+\begin{itemize}
+\item identify the object in the view (recognition)
+\item identify the object and its pose in the view (pose estimation)
+\item localize an object in the view and identify it (detection)
+\end{itemize}
+
+The view provided can be clean or cluttered.
+It can be solely 3-D data, or it can include an image from a camera.
+The sensor that provides the 3-D data can be LIDAR, or structured light, or a stereo camera.
+It can have highly regular or random noise statistics.
+
+Our database can consist of full polygonal models, full point cloud models, or sparse views.
+In the latter cases, the models may contains noise which may or may not be of the same form as our test sensor.
+
+
+\subsection{3D and 2D/3D Recognition Whirlwind Overview}
+\note{sergeyk: this is lifted from B3DO paper, I am re-working and expanding this to incorporate our summer reading list}
 \label{sec:2d-3d}
 A comprehensive review of all 3-D features proposed for recognition is beyond the scope of our work--briefly notable prominent techniques include spin images \cite{spin}, 3-D shape context \cite{Frome3DSC}, and the recent VFH model \cite{RaduVFH}--but this list is not exhaustive. 
 
@@ -30,11 +48,24 @@ Finally, \cite{leibe10ijrr} explores pedestrian detection by using stereo and te
 
 \subsection{Features}
 
+* Spin images \cite{Johnson1999}
+
+* Curvature histograms, Geometric moments
+
+* 3D Shape contexts and Harmonic shape contexts \cite{Frome2004}
+
+* Point Feature Histograms \cite{Rusu2009}
+
+* Andrew Ng-style combinations \cite{Gould2008,Coates2010}
+
+* Kinect decision forest \cite{Shotton2011}
+
 The SHREC 2011 Benchmark \cite{Boyer2011} is an evaluation of 3-D feature detection and description stages of shape retrieval algorithms.
 The benchmark measures how the detection and description algorithms degrade under synthetic transformations of the 3D data, including sub-sampling, isometry, holes, shot and random noise, view, and affine.
 The benchmark is inspired by similar evaluation of computer vision features(\cite{Mikolajczyk2004,Mikolajczyk2005}, and the features evaluated are largely 3-D analogs of 2-D detectors and descriptors such as the Harris corner and Difference-of-Gaussians \cite{Harris1988,Lowe2004} detectors and SIFT, HOG, and MSER descriptors \cite{Lowe2004,Dalal2005,Matas2004}.
 
 \subsection{Datasets}
+\note{some is lifted from B3DO paper}
 
 An evaluation of a method is only as meaningful as the underlying dataset.
 There are a number of available dataset for 3-D recognition, varying in size, content (3D only or with 2D views), labels (pose, instance, category, or some combination of these), and source (controlled capture or ``in the wild'').
@@ -73,7 +104,3 @@ The first set of results is provided on 9 object classes, but the growing nature
 
 {\bf Other datasets:} Beyond these, a couple of other datasets have been made available which do include simultaneous capture of image and depth but serve more specialized purposes like autonomous driving \cite{ford_dataset}, pedestrian detection \cite{leibe10ijrr} and driver assistance \cite{walk10eccv}.
 Their specialized nature means that they cannot be leveraged for the multi-object category localization task that is our goal.
-
-In contrast to all of these datasets, our dataset has categories with both a large number of categories and many different instances per category, is photographed ``in the wild'' instead of in a controlled turntable setting, and features formidable variation in lighting and viewpoint throughout the set.
-For an illustration, consider Figure~\ref{fig:chair_examples}, which presents a sample of examples of the ``chair'' category in our dataset.
-These qualities make it more representative of the kind of data that can actually be seen in actual people's homes; the kind of data that a domestic service robot would be required to deal with and do online training on.
