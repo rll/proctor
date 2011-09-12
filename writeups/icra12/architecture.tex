@@ -1,6 +1,45 @@
 %!TEX root=./report.tex
 \section{ARCHITECTURE AND IMPLEMENTATION}
-* describe the Proctor code
+Our evaluation framework is built around classes from PCL and VTK.
+The stock detection algorithm relies heavily PCL, which does all of the lower level work.
+We use the Princeton Shape Benchmark.
+Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner \cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
 
-* synthetic approach, voting, kdTree stuff, PCL
+Our evaluation framework has two major parts. First is the Detector class, which houses the detection logic. Second is the Proctor class, which generates tests and reports.
 
+\subsection{Detector}
+The Detector class is intended to be something that algorithm authors shall edit.
+It follows an interface with methods that take training data and test queries.
+For training, the detector receives the full point cloud of each model.
+For testing, the detector receives a range scan of some model, at some angle. It must output an estimated likeness rating for each candidate model, an estimated euclidean distance to the top candidates, and an ultimate best guess.
+The rest of the detector's logic is theoretically left up to the algorithm author.
+
+\subsection{Stock Detector Implementation}
+We are publishing the current contribution with a stock detector, which serves as both a scaffolding for modular enhancements and a baseline for larger efforts.
+The stock implementation makes use of Fast Point Feature Histograms, voting-based classification, and registration.
+
+During training, the stock implementation divides the points of each model into uniform voxels. For each voxel, it picks a representative point that is closest to the centroid of the voxel. This subset is a dense keypoint sampling of the model. It computes the Fast Point Feature Histogram \cite{Rusu09ICRA} centered at each of the keypoints. A KDTree is built from these feature histograms and stored for later use.
+
+During testing, the stock implementation starts the same way as training: it uses a voxel grid to generate a dense keypoint set, and computes FPFH on those keypoints.
+For each keypoint in the query scene, the implementation searches the KDTree built during training for the four nearest neighbors in feature space. Each of these results contributes a vote for the corresponding model, weighted by the reciprocal of the L2 distance between the query feature vector and the model feature vector.
+The implementation then tries to register the query with the four candidate models that have the greatest total votes. This is done by first using the RANSAC initial alignment algorithm described in section IV of the FPFH paper, then, running a few iterations of ICP.
+
+The vote totals are output as the estimated likeness ratings.
+The registered distance from the four top canidates are returned as the estimated euclidean distances.
+Finally, the model that registers most closely with the scene is selected as the detected model.
+
+\subsection{Proctor}
+The Proctor class surrounds calls to the Detector's interface with logic for capturing synthetic range scans as well as code for compiling raw results into popular statistics.
+The evaluation program takes up to two arguments, used as random number generator seeds.
+
+The seed first is used to select a random subset of models from the Princeton Shape Benchmark. If omitted, the default seed is a constant value.
+The selected models are read from disk, along with some of the metadata included in the dataset.
+From the loaded polygonal models, the program generates the full point clouds for testing by running a virtual range scan from uniform angles around the model's center of mass.
+The virtual scanner's distance is computed as a constant times the average distance from all points on the surfaces of all polygons to the center of mass.
+The program then passes the full point clouds to the Detector for training.
+
+The second seed is used to generate a series of test vectors, which consist of a random model and a random angle.
+For each test vector, the program runs a virtual range scan of the selected model from the selected angle.
+The program then passes the range scan to the Detector for training.
+
+After all test trials have completed, the program uses the output from the Detector to compute the metrics described in the next section.

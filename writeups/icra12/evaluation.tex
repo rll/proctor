@@ -6,15 +6,16 @@ As a reminder, our task is identifying the correct object model from a large dat
 
 We evaluate the correctness of our results with the following metrics:
 \begin{itemize}
-  \item Percentage of top-K guesses correct (where K=1?)
-  \item Area under the cumulative result-within-top-K histogram and maybe some plots
-  \item Confusion matrix for top-K
-  \item precision-recall plots (and the average precision := area under the PR curve)
+  \item Percentage of ultimate guesses correct
+  \item Confusion matrix for ultimate guess
+  \item Precision-recall curve (using registration results)
+  \item Average rank of correct model (using voting results)
+  \item Area under the cumulative result-within-top-K histogram
 \end{itemize}
 
 An additional important evaluation is the runtime performance of different methods.
 Hence, we report timing results, split by the different stages of our pipeline, for all experimental conditions.
-In all cases, the tests were run on a \note{fill in hardware specs here}.
+In all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
 
 * table per dataset
 
