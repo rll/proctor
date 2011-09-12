@@ -1,1 +1,7 @@
+# LATEX STUFF
 *.pdf
+.*.aux*
+report*.make
+report*.make.*
+report.d
+report.fls
