@@ -1,4 +1,4 @@
-#include <pcl/features/fpfh.h>
+#include <pcl/features/pfh.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
@@ -207,14 +207,14 @@ IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
   cout << "computing features on " << indices->size() << " points" << endl;
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-  FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-  fpfh.setRadiusSearch(12);
-  fpfh.setInputCloud(cloud);
-  fpfh.setIndices(indices);
+  PFHEstimation<PointNormal, PointNormal, Signature> pfh;
+  pfh.setRadiusSearch(12);
+  pfh.setInputCloud(cloud);
+  pfh.setIndices(indices);
   KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
-  fpfh.setSearchMethod(kdt);
-  fpfh.setInputNormals(cloud);
-  fpfh.compute(*features);
+  pfh.setSearchMethod(kdt);
+  pfh.setInputNormals(cloud);
+  pfh.compute(*features);
   if (features->points.size() != indices->size())
     cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
   return features;

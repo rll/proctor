@@ -34,7 +34,7 @@ public:
     NUM_BINS
   };
 
-  typedef FPFHSignature33 Signature;
+  typedef PFHSignature125 Signature;
 
   /** a cloud and its features */
   typedef struct {
