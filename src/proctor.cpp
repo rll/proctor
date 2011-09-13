@@ -209,8 +209,8 @@ void Proctor::printClassifierStats() {
     area += Config::num_models - rank + 1;
   }
   avg /= Config::num_trials;
-  printf("average classifier rank:                          %0.2f\n", avg);
-  printf("area under curve of cumulative histogram of rank: %d\n", area);
+  printf("average vote rank of correct model:                    %0.2f\n", avg);
+  printf("area under cumulative histogram of correct model rank: %d\n", area);
 }
 
 void Proctor::printTimer() {

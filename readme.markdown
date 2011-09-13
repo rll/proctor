@@ -18,12 +18,14 @@ The stock implementation uses FPFH, RANSAC, and ICP.
 
 #### Training
 
-1. compute the FPFH on some random points in each model
+1. compute the FPFH on a dense sampling points in each model
 
 #### Testing
 
-1. compute the FPFH on some random points in the scene
-1. for each model, do the following: 
+1. compute the FPFH on a dense sampling of points in the scene
+1. for each scene feature point, find the closest matches in any model
+   1. for each match, contribute a vote to the corresponding model
+1. for each of the top candidate models, do the following:
    1. use RANSAC, using the feature histograms to select form an educated pose guess in each iteration
    1. if the result is closer than a threshold, run ICP to enhance the alignment
    1. the distance to the current model is the fitness score from the above registration procedure
@@ -56,6 +58,8 @@ It computes three popular evaluation metrics from the `Detector`'s outputs:
 
 1. percentage of guesses correct
 1. precision-recall curve
+1. average vote rank of correct model
+1. area under cumulative histogram of correct model rank
 1. confusion matrix
 
 ## Timer
