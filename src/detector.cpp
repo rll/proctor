@@ -157,9 +157,9 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   int guess = -1;
   for (int ci = 0; ci < num_registration; ci++) {
     int mi = ballot[ci].mi;
-    cout << mi << ": " << ballot[ci].votes
+    flush(cout << mi << ": " << ballot[ci].votes);
     registration[mi] = computeRegistration(e, mi, ci);
-    cout << "/" << registration[mi] << endl;
+    cout << " / " << registration[mi] << endl;
     if (registration[mi] < best) {
       guess = mi;
       best = registration[mi];
@@ -204,7 +204,7 @@ IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
 }
 
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
-  cout << "computing features on " << indices->size() << " points" << endl; // %%%
+  cout << "computing features on " << indices->size() << " points" << endl;
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
   FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
   fpfh.setRadiusSearch(0.1);
