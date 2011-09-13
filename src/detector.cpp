@@ -214,6 +214,8 @@ PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointN
   fpfh.setSearchMethod(kdt);
   fpfh.setInputNormals(cloud);
   fpfh.compute(*features);
+  if (features->points.size() != indices->size())
+    cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
   return features;
 }
 
