@@ -15,9 +15,8 @@ using namespace pcl;
 class Detector {
 public:
 
-  // these will be removed when we switch to dense
-  static const int model_points = 512;
-  static const int scene_points = 128;
+  /** density of keypoints, used as a voxel size */
+  static const double keypoint_separation = 0.04;
 
   /** each feature point can vote for up to this many models */
   static const int max_votes = 5;
@@ -69,6 +68,9 @@ public:
   Timer<NUM_BINS> timer;
 
 private:
+
+  /** get a dense sampling of points as keypoints and return their indices */
+  IndicesPtr computeKeypoints(PointCloud<PointNormal>::Ptr cloud);
 
   /** run the feature */
   PointCloud<Signature>::Ptr computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);

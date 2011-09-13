@@ -1,5 +1,6 @@
 #include <pcl/features/fpfh.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
 
 #include "proctor/detector.h"
@@ -88,7 +89,7 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
     Entry &e = database[mi];
     e.cloud = models[mi];
     // TODO: replace this with UniformSampling
-    e.indices = Proctor::randomSubset(e.cloud->points.size(), model_points);
+    e.indices = computeKeypoints(e.cloud);
     timer.start();
     e.features = obtainFeatures(mi, e.cloud, e.indices);
     timer.stop(OBTAIN_FEATURES_TRAINING);
@@ -111,7 +112,7 @@ bool operator<(const Candidate &a, const Candidate &b) {
 int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration) {
   Entry e;
   e.cloud = scene;
-  e.indices = Proctor::randomSubset(e.cloud->points.size(), scene_points);
+  e.indices = computeKeypoints(e.cloud);
   timer.start();
   e.features = computeFeatures(e.cloud, e.indices);
   timer.stop(COMPUTE_FEATURES_TESTING);
@@ -180,6 +181,17 @@ void Detector::printTimer() {
     timer[RANSAC],
     timer[ICP]
   );
+}
+
+IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
+  IndicesPtr indices (new vector<int>());
+  PointCloud<int> leaves;
+  UniformSampling<PointNormal> us;
+  us.setRadiusSearch(keypoint_separation);
+  us.setInputCloud(cloud);
+  us.compute(leaves);
+  indices->assign(leaves.points.begin(), leaves.points.end()); // can't use operator=, probably because of different allocators
+  return indices;
 }
 
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
