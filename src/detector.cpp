@@ -195,6 +195,7 @@ IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
 }
 
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
+  cout << "computing features on " << indices->size() << " points" << endl; // %%%
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
   FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
   fpfh.setRadiusSearch(0.1);
