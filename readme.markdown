@@ -87,7 +87,7 @@ For the stock Detector implementation to compile on g++ 4.4.3, `SampleConsensusI
 
 # Usage
 
-This program is only stored in a local repository on heli2, and its repository is not hosted anywhere online.
+This program is hosted on gihub.
 
 Supposing you can get a copy, you have a try by entering the following commands:
 
