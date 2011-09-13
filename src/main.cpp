@@ -11,7 +11,7 @@ int main(int argc, char **argv) {
   if (argc >= 3) test_seed = atoi(argv[2]);
 
   Proctor::readModels("/home/pabbeel/sergeyk/wgdb_off", 175, model_seed);
-  detector.enableVisualization();
+  // detector.enableVisualization();
   proctor.train(detector);
   proctor.test(detector, test_seed);
   proctor.printResults(detector);
