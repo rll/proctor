@@ -7,7 +7,7 @@ namespace Config {
   const int num_models = 8;
 
   /** how many times to test the detector */
-  const int num_trials = 20;
+  const int num_trials = 10 * num_models;
 
 }
 
