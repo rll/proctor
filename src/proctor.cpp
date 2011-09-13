@@ -148,7 +148,16 @@ void Proctor::test(Detector &detector, unsigned int seed) {
     cout << "scanned model " << scenes[ni].mi << endl;
 
     timer.start();
-    int guess = detector.query(scene, classifier[ni], registration[ni]);
+    int guess;
+    try {
+      guess = detector.query(scene, classifier[ni], registration[ni]);
+    } catch (exception &e) {
+      cout << "Detector exception" << endl;
+      cout << e.what() << endl;
+      guess = 0;
+      memset(classifier[ni], 0, sizeof(classifier[ni]));
+      memset(registration[ni], 0, sizeof(registration[ni]));
+    }
     timer.stop(DETECTOR_TEST);
     cout << "detector guessed " << guess << endl;
 
