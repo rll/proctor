@@ -9,6 +9,10 @@
 #include "proctor/config.h"
 #include "proctor/timer.h"
 
+POINT_CLOUD_REGISTER_POINT_STRUCT (pcl::Histogram<153>,
+  (float[153], histogram, histogram)
+)
+
 using namespace std;
 using namespace pcl;
 
@@ -19,7 +23,7 @@ public:
   static const double keypoint_separation = 5;
 
   /** each feature point can vote for up to this many models */
-  static const int max_votes = 5;
+  static const int max_votes = Config::num_models;
 
   /** run the registration on this many models */
   static const int num_registration = 4;
@@ -34,7 +38,7 @@ public:
     NUM_BINS
   };
 
-  typedef FPFHSignature33 Signature;
+  typedef Histogram<153> Signature;
 
   /** a cloud and its features */
   typedef struct {

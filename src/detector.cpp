@@ -1,5 +1,6 @@
-#include <pcl/features/fpfh.h>
+#include <pcl/features/spin_image.h>
 #include <pcl/io/pcd_io.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
 
@@ -124,11 +125,11 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   for (int pi = 0; pi < e.indices->size(); pi++) {
     vector<int> indices;
     vector<float> distances;
-    tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
-    for (int ri = 0; ri < max_votes; ri++) {
+    int votes = tree->nearestKSearch(*e.features, pi, max_votes, indices, distances);
+    if (votes < max_votes) cout << "uh-oh, only found " << votes << " matches." << endl;
+    for (int ri = 0; ri < votes; ri++) {
       // do a linear search to determine which model
       // this will make sense when we switch to dense
-      if (distances[ri] == 0) continue; // how unpleasant
       int index = indices[ri];
       int mi;
       for (mi = 0; mi < Config::num_models; mi++) {
@@ -207,14 +208,13 @@ IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
   cout << "computing features on " << indices->size() << " points" << endl;
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-  FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-  fpfh.setRadiusSearch(12);
-  fpfh.setInputCloud(cloud);
-  fpfh.setIndices(indices);
+  SpinImageEstimation<PointNormal, PointNormal, Signature> si (8, 0.5, 0);
+  si.setRadiusSearch(18);
+  si.setInputWithNormals(cloud, cloud);
+  si.setIndices(indices);
   KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
-  fpfh.setSearchMethod(kdt);
-  fpfh.setInputNormals(cloud);
-  fpfh.compute(*features);
+  si.setSearchMethod(kdt);
+  si.compute(*features);
   if (features->points.size() != indices->size())
     cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
   return features;
