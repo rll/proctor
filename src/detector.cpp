@@ -181,13 +181,13 @@ void Detector::printTimer() {
     "build feature tree:       %10.3f sec\n"
     "compute testing features: %10.3f sec\n"
     "voting classifier:        %10.3f sec\n"
-    "RANSAC:                   %10.3f sec\n"
+    "initial alignment:        %10.3f sec\n"
     "ICP:                      %10.3f sec\n",
     timer[OBTAIN_FEATURES_TRAINING],
     timer[BUILD_TREE],
     timer[COMPUTE_FEATURES_TESTING],
     timer[VOTING_CLASSIFIER],
-    timer[RANSAC],
+    timer[IA_RANSAC],
     timer[ICP]
   );
 }
@@ -256,7 +256,7 @@ double Detector::computeRegistration(Entry &source, int mi, int ci) {
   }
   ia_ransac_sub.align(*aligned);
   if (ia_ransac_sub.getFitnessScore() > 0.006) return ia_ransac_sub.getFitnessScore();
-  timer.stop(RANSAC);
+  timer.stop(IA_RANSAC);
 
   timer.start();
   IterativeClosestPoint<PointNormal, PointNormal> icp;

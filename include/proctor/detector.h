@@ -29,7 +29,7 @@ public:
     BUILD_TREE,
     COMPUTE_FEATURES_TESTING,
     VOTING_CLASSIFIER,
-    RANSAC,
+    IA_RANSAC,
     ICP,
     NUM_BINS
   };
@@ -80,7 +80,7 @@ private:
   /** try to load the features from disk, or do it from scratch. for training only */
   PointCloud<Signature>::Ptr obtainFeatures(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices);
 
-  /** run RANSAC and ICP to judge similarity */
+  /** run IA_RANSAC and ICP to judge similarity */
   double computeRegistration(Entry &source, int mi, int ci);
 
   auto_ptr<visualization::CloudViewer> vis;

@@ -766,5 +766,5 @@ obtain training features:  30635.700 sec
 build feature tree:            0.030 sec
 compute testing features:   2761.340 sec
 voting classifier:             6.320 sec
-RANSAC:                     3836.660 sec
+initial alignment:          3836.660 sec
 ICP:                        2675.910 sec
