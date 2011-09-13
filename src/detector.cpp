@@ -96,8 +96,10 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
     *features += *e.features;
     cout << "finished model " << mi << endl;
   }
+  timer.start();
   tree = KdTree<Signature>::Ptr(new KdTreeFLANN<Signature>());
   tree->setInputCloud(features);
+  timer.stop(BUILD_TREE);
 }
 
 typedef struct {
@@ -117,6 +119,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   e.features = computeFeatures(e.cloud, e.indices);
   timer.stop(COMPUTE_FEATURES_TESTING);
   // let each point cast votes
+  timer.start();
   memset(classifier, 0, Config::num_models * sizeof(*classifier));
   for (int pi = 0; pi < e.indices->size(); pi++) {
     vector<int> indices;
@@ -142,6 +145,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
     ballot[mi].votes = classifier[mi];
   }
   partial_sort(ballot.begin(), ballot.begin() + num_registration, ballot.end());
+  timer.stop(VOTING_CLASSIFIER);
   if (vis.get()) {
     for (int ci = 0; ci < num_registration; ci++) {
       vis->runOnVisualizationThreadOnce(show_candidate(ci, database[ballot[ci].mi].cloud));
@@ -153,8 +157,9 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
   int guess = -1;
   for (int ci = 0; ci < num_registration; ci++) {
     int mi = ballot[ci].mi;
+    cout << mi << ": " << ballot[ci].votes
     registration[mi] = computeRegistration(e, mi, ci);
-    cout << mi << ": " << registration[mi] << endl;
+    cout << "/" << registration[mi] << endl;
     if (registration[mi] < best) {
       guess = mi;
       best = registration[mi];
@@ -173,11 +178,15 @@ void Detector::enableVisualization() {
 void Detector::printTimer() {
   printf(
     "obtain training features: %10.3f sec\n"
+    "build feature tree:       %10.3f sec\n"
     "compute testing features: %10.3f sec\n"
+    "voting classifier:        %10.3f sec\n"
     "RANSAC:                   %10.3f sec\n"
     "ICP:                      %10.3f sec\n",
     timer[OBTAIN_FEATURES_TRAINING],
+    timer[BUILD_TREE],
     timer[COMPUTE_FEATURES_TESTING],
+    timer[VOTING_CLASSIFIER],
     timer[RANSAC],
     timer[ICP]
   );

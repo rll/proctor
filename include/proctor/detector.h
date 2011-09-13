@@ -26,7 +26,9 @@ public:
 
   enum TimerBin {
     OBTAIN_FEATURES_TRAINING,
+    BUILD_TREE,
     COMPUTE_FEATURES_TESTING,
+    VOTING_CLASSIFIER,
     RANSAC,
     ICP,
     NUM_BINS
