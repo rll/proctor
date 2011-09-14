@@ -3,7 +3,7 @@
 
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
-#include <pcl/kdtree/kdtree.h>
+#include <pcl/kdtree/impl/kdtree_flann.hpp>
 #include <pcl/visualization/cloud_viewer.h>
 
 #include "proctor/config.h"
@@ -34,7 +34,7 @@ public:
     NUM_BINS
   };
 
-  typedef FPFHSignature33 Signature;
+  typedef SHOT Signature;
 
   /** a cloud and its features */
   typedef struct {

@@ -1,4 +1,4 @@
-#include <pcl/features/fpfh.h>
+#include <pcl/features/shot.h>
 #include <pcl/io/pcd_io.h>
 #include <pcl/keypoints/uniform_sampling.h>
 #include <pcl/registration/icp.h>
@@ -207,33 +207,22 @@ IndicesPtr Detector::computeKeypoints(PointCloud<PointNormal>::Ptr cloud) {
 PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
   cout << "computing features on " << indices->size() << " points" << endl;
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-  FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-  fpfh.setRadiusSearch(12);
-  fpfh.setInputCloud(cloud);
-  fpfh.setIndices(indices);
+  SHOTEstimation<PointNormal, PointNormal, Signature> shot;
+  shot.setRadiusSearch(12);
+  shot.setInputCloud(cloud);
+  shot.setIndices(indices);
   KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
-  fpfh.setSearchMethod(kdt);
-  fpfh.setInputNormals(cloud);
-  fpfh.compute(*features);
+  shot.setSearchMethod(kdt);
+  shot.setInputNormals(cloud);
+  shot.compute(*features);
   if (features->points.size() != indices->size())
     cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
   return features;
 }
 
 PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(int mi, PointCloud<PointNormal>::Ptr cloud, IndicesPtr indices) {
-  char name[17];
-  sprintf(name, "feature_%04d.pcd", Proctor::models[mi].id);
-  if (ifstream(name)) {
-    PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
-    io::loadPCDFile(name, *features);
-    if (features->points.size() != indices->size())
-      cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
-    return features;
-  } else {
-    PointCloud<Signature>::Ptr features = computeFeatures(cloud, indices);
-    io::savePCDFileBinary(name, *features);
-    return features;
-  }
+  // SHOT is not registered for serialization
+  return computeFeatures(cloud, indices);
 }
 
 double Detector::computeRegistration(Entry &source, int mi, int ci) {
