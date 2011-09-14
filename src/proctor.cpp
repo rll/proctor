@@ -33,7 +33,7 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
 
     // read mesh
     models[mi].id = id;
-    snprintf(path, sizeof(path), "%s/%d/m%d/m%d.off", base, id / 100, id, id);
+    snprintf(path, sizeof(path), "%s/model%d.off", base, id);
     file = fopen(path, "r");
     int line = 1;
 
@@ -80,13 +80,13 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
     models[mi].mesh->SetPolys(ca); ca->Delete();
 
     // read metadata
-    snprintf(path, sizeof(path), "%s/%d/m%d/m%d_info.txt", base, id / 100, id, id);
+    snprintf(path, sizeof(path), "%s/model%d_info.txt", base, id);
     file = fopen(path, "r");
     while (!feof(file)) {
       char buf[256];
       fgets(buf, sizeof(buf), file);
       if (!strncmp("center: ", buf, 8)) {
-        if (sscanf(buf, "center: (%f,%f,%f)\n", &models[mi].cx, &models[mi].cy, &models[mi].cz) != 3) {
+        if (sscanf(buf, "center: %f %f %f\n", &models[mi].cx, &models[mi].cy, &models[mi].cz) != 3) {
           cerr << "invalid centroid in file " << path << endl;
           cerr << buf;
           exit(-1);

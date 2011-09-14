@@ -16,7 +16,7 @@ class Detector {
 public:
 
   /** density of keypoints, used as a voxel size */
-  static const double keypoint_separation = 0.04;
+  static const double keypoint_separation = 5;
 
   /** each feature point can vote for up to this many models */
   static const int max_votes = 5;

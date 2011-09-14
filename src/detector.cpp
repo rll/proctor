@@ -128,6 +128,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
     for (int ri = 0; ri < max_votes; ri++) {
       // do a linear search to determine which model
       // this will make sense when we switch to dense
+      if (distances[ri] == 0) continue; // how unpleasant
       int index = indices[ri];
       int mi;
       for (mi = 0; mi < Config::num_models; mi++) {
@@ -135,7 +136,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
         index -= database[mi].indices->size();
       }
       // TODO: is this appropriate weighting?
-      classifier[mi] += 1. / distances[ri];
+      classifier[mi] += 1. / (distances[ri] + numeric_limits<float>::epsilon());
     }
   }
   // get top candidates
@@ -207,7 +208,7 @@ PointCloud<Detector::Signature>::Ptr Detector::computeFeatures(PointCloud<PointN
   cout << "computing features on " << indices->size() << " points" << endl;
   PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
   FPFHEstimation<PointNormal, PointNormal, Signature> fpfh;
-  fpfh.setRadiusSearch(0.1);
+  fpfh.setRadiusSearch(12);
   fpfh.setInputCloud(cloud);
   fpfh.setIndices(indices);
   KdTree<PointNormal>::Ptr kdt (new KdTreeFLANN<PointNormal>());
@@ -247,8 +248,8 @@ double Detector::computeRegistration(Entry &source, int mi, int ci) {
   PointCloud<PointNormal>::Ptr aligned (new PointCloud<PointNormal>());
   ia_ransac_sub.setSourceIndices(source.indices);
   ia_ransac_sub.setTargetIndices(target.indices);
-  ia_ransac_sub.setMinSampleDistance(0.05);
-  ia_ransac_sub.setMaxCorrespondenceDistance(0.5);
+  ia_ransac_sub.setMinSampleDistance(1);
+  ia_ransac_sub.setMaxCorrespondenceDistance(50);
   ia_ransac_sub.setMaximumIterations(256);
   ia_ransac_sub.setInputCloud(source.cloud);
   ia_ransac_sub.setSourceFeatures(source.features);
@@ -259,7 +260,6 @@ double Detector::computeRegistration(Entry &source, int mi, int ci) {
     ia_ransac_sub.registerVisualizationCallback(updater);
   }
   ia_ransac_sub.align(*aligned);
-  if (ia_ransac_sub.getFitnessScore() > 0.006) return ia_ransac_sub.getFitnessScore();
   timer.stop(IA_RANSAC);
 
   timer.start();
@@ -267,7 +267,7 @@ double Detector::computeRegistration(Entry &source, int mi, int ci) {
   PointCloud<PointNormal>::Ptr aligned2 (new PointCloud<PointNormal>());
   icp.setInputCloud(aligned);
   icp.setInputTarget(target.cloud);
-  icp.setMaxCorrespondenceDistance(0.1);
+  icp.setMaxCorrespondenceDistance(10);
   icp.setMaximumIterations(64);
   if (vis.get()) {
     f updater (visualization_callback(ci, vis.get()));
