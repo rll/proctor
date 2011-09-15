@@ -4,6 +4,7 @@ Processes all data output by Proctor to output all plots and Latex-source
 tables that we could need for publication.
 """
 import re
+import os
 from pprint import pprint
 import copy
 from pylab import *
@@ -15,15 +16,43 @@ class Bunch:
     return self.__dict__
 
 def main():
-  e = Bunch()
-  e.dataset="PSB"
-  e.feature="PFH"
-  e.data=None
-  e.data = parse_log(e)
+  """Goes through different features, outputting their evaluations, as well as
+  a combined PR curve evaluation."""
+
+  # First, load the common model names
+  model_name_location = "../writeups/model_names.txt"
+  with open(model_name_location) as f:
+    lines = f.readlines()
+  model_names = [line.strip() for line in lines]
+
+  features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
+  evaluations = []
+  for feature in features:
+    e = Bunch()
+    e.dataset="PSB"
+    e.feature=feature
+    e.data = parse_log(e)
+    e.model_names = model_names
+    print("Feature: %s"%e.feature)
+    print("  Num correct: %s"%e.num_correct)
+    print("  AP: %s"%e.ap)
+    print("  Average rank: %s"%e.avg_rank)
+    print("  AUH: %s"%e.auh)
+
+    e.plot_location = "../writeups/figures/"
+    if not os.path.exists(e.plot_location):
+      os.makedirs(e.plot_location)
+    
+    evaluations.append(e)
+
+    plot_pr([e])
+    plot_confusion_matrix(e)
+    plot_rank_histogram(e)
+  plot_pr(evaluations)
 
 def parse_log(e):
-  log_location_template = "../writeups/%s.out"
-  with open(log_location_template%e.feature.lower()) as log:
+  e.log_location = "../writeups/%s.out"%e.feature.lower()
+  with open(e.log_location) as log:
     lines = log.readlines()
 
   e.trials = []
@@ -43,17 +72,21 @@ def parse_log(e):
       trial.trial_num = int(re.search('test (\d+)', l).group(1))
       trial.model_ind = int(re.search('scanned model (\d+)', lines[i+1]).group(1))
       trial.model_at_rank = []
-      for j in range(4):
-        # get the first number on the line
-        trial.model_at_rank.append(int(re.search('^(\d+)', lines[i+3+j]).group(1)))
-      trial.detector_guess = int(re.search('detector guessed (\d+)', lines[i+3+4]).group(1))
-      e.trials.append(trial)
-    e.num_trials = len(e.trials)
+      try:
+        for j in range(4):
+          # get the first number on the line
+          trial.model_at_rank.append(int(re.search('^(\d+)', lines[i+3+j]).group(1)))
+        trial.detector_guess = int(re.search('detector guessed (\d+)', lines[i+3+4]).group(1))
+        e.trials.append(trial)
+      except:
+        None
+        # it's okay, detector just failed to find matches
+      e.num_trials = len(e.trials)
     
     # Overview output
     if l.find('[overview]') > -1:
       m = re.search('^(\d+)', lines[i+1]) # first number
-      num_correct = int(m.group(1))
+      e.num_correct = int(m.group(1))
 
     # Precision-Recall output
     if l.find('[precision-recall]') > -1:
@@ -69,37 +102,25 @@ def parse_log(e):
         j += 1
       e.ap = VOCap(e.recall,e.precision)
 
+    # Some more statistics about the classifier
     if l.find('[classifier stats]') > -1:
       # get the last numbers in the next two lines
       e.avg_rank = float(lines[i+1].split()[-1])
       e.auh = float(lines[i+2].split()[-1])
-      # NOTE: dividing by the total possible area to get a [0,1] number
       e.auh /= e.num_models*e.num_trials
 
+    # Confusion matrix
     if l.find('[confusion matrix]') > -1:
       # get the num_models lines following this one
       data = lines[i+1:i+1+e.num_models]
       data = [line.strip() for line in data]
       e.confusion_matrix = matrix(';'.join(data))
 
+    # Timing info
     if l.find('[timing]') > -1:
       print("TIMING HERE")
-
+      # TODO: do timing info 
     i += 1
-
-  model_name_location = "../writeups/model_names.txt"
-  with open(model_name_location) as f:
-    lines = f.readlines()
-  e.model_names = [line.strip() for line in lines]
-
-  pprint(e.trials[0].dict())
-  print("Num correct: %s"%num_correct)
-  print("AP: %s"%e.ap)
-  print("AUH: %s"%e.auh)
-  print("Average rank: %s"%e.avg_rank)
-  plot_pr([e])
-  plot_confusion_matrix(e)
-  plot_rank_histogram(e)
 
 def rank_histogram_data(e):
   # Go through and count the number of times the right model was rank-1,
@@ -133,9 +154,9 @@ def plot_rank_histogram(e):
   xticks(ind+width/2., ranks) 
   xlabel('Number of top results within which the correct model is fetched')
   #ylabel('Proportion')
-  title('Area under the rank histogram is %.3f'%e.auh)
+  title('Area under the rank histogram is %.3f.'%e.auh)
 
-  filename = "%s_rankhist.png"%e.feature
+  filename = e.plot_location+"%s_rankhist.png"%e.feature
   savefig(filename)
 
 def plot_confusion_matrix(e):
@@ -168,24 +189,24 @@ def plot_confusion_matrix(e):
   xticks(arange(0,e.num_models), e.model_names, rotation=30, size='small')
   yticks(arange(0,e.num_models), e.model_names, size='small')
 
-  filename = "%s_confmat.png"%e.feature
+  filename = e.plot_location+"%s_confmat.png"%e.feature
   savefig(filename)
 
 def plot_pr(evaluations):
   """Takes a list of evaluations and plots their PR curves."""
   clf()
   linestyles = ['-', '--', ':']
-  lines = []
   for i,e in enumerate(evaluations):
     label = "%s: %.3f"%(e.feature,e.ap)
     lstyle = linestyles[mod(i,len(linestyles))]
-    lines.append(plot(e.recall,e.precision,lstyle,label=label))
+    plot(e.recall,e.precision,lstyle,label=label)
   legend()
   xlabel('Recall')
   ylabel('Precision')
   grid(True)
 
-  filename = "%s_pr.png"%('-'.join([e.feature for e in evaluations]))
+  e = evaluations[0]
+  filename = e.plot_location+"%s_pr.png"%('-'.join([e.feature for e in evaluations]))
   savefig(filename)
 
 def VOCap(rec,prec):
