@@ -23,13 +23,12 @@ class EvalSet:
       label = "%s: %.3f"%(e.feature,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
       plot(e.recall,e.precision,lstyle,label=label)
-    legend()
+    legend(loc='lower left')
     xlabel('Recall')
     ylabel('Precision')
     grid(True)
 
-    filename = self.plot_location+"%s_pr.png"%('-'.join([f for f in features]))
-    savefig(filename)
+    self.savefig_wrap(features,'pr')
 
   def print_comparison_table(self, features=None):
     # TODO
@@ -43,26 +42,32 @@ class EvalSet:
     print("  Average rank: %s"%e.avg_rank)
     print("  AUH: %s"%e.auh)
 
-  def plot_rank_histogram(self, feature):
-    """Takes an evaluation and outputs its rank histogram to file."""
-    e = self.evals[feature]
+  def plot_rank_histogram(self, features=None):
+    if not features:
+      features = self.features
 
+    colors = ['blue','green','red','cyan']
     clf()
-    counts = e.rank_histogram_data() 
-    counts_r = 1.*counts/sum(counts)
+    width = .9/len(features)
     ind = arange(5)
-    width = 0.9
-    bar(ind,cumsum(counts_r),width=.9,color='black')
-    for i,count in enumerate(cumsum(counts_r)):
-      text(i+width/2.-.1, count*1.-.04, "%.3f"%count, color='white')
+    for i,feature in enumerate(features):
+      e = self.evals[feature]
+      counts = e.rank_histogram_data() 
+      counts_r = 1.*counts/sum(counts)
+      color = colors[mod(i, len(colors))]
+      # only print the value if doing one feature
+      if len(features)==1:
+        color = 'black'
+        for j,count in enumerate(cumsum(counts_r)):
+          text(j+width/2.-.1, count*1.-.04, "%.3f"%count, color='white')
+      bar(ind+i*width,cumsum(counts_r),color=color,width=width,label=feature)
     ranks = ['1','2','3','4','5+']
     xticks(ind+width/2., ranks) 
     xlabel('Number of top results within which the correct model is fetched')
-    #ylabel('Proportion')
     title('Area under the rank histogram is %.3f.'%e.auh)
-
-    filename = self.plot_location+"%s_rankhist.png"%e.feature
-    savefig(filename)
+    if len(features)>1:
+      legend(loc='upper left')
+    self.savefig_wrap(features,'rankhist')
 
   def plot_confusion_matrix(self,feature):
     """Takes an evaluation and outputs its confusion matrix to file."""
@@ -95,7 +100,12 @@ class EvalSet:
     xticks(arange(0, self.num_models), self.model_names, rotation=30, size='small')
     yticks(arange(0, self.num_models), self.model_names, size='small')
 
-    filename = self.plot_location+"%s_confmat.png"%e.feature
+    self.savefig_wrap([feature],'confmat')
+
+  def savefig_wrap(self, features, suffix):
+    """Saves the plot to a canonical name."""
+    feat_names = '-'.join([f for f in features])
+    filename = self.plot_location+"%s_%s.png"%(feat_names,suffix)
     savefig(filename)
 
 def main():
@@ -124,11 +134,12 @@ def main():
     eval_set.print_info(feature)
     # output plots
     eval_set.plot_confusion_matrix(feature)
-    eval_set.plot_rank_histogram(feature)
+    eval_set.plot_rank_histogram([feature])
     eval_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
   eval_set.print_comparison_table()
+  eval_set.plot_rank_histogram()
   eval_set.plot_pr()
 
 if __name__ == '__main__':
