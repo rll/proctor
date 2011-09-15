@@ -11,6 +11,8 @@ from pylab import *
 class Bunch:
   def __init__(self, **kwds):
     self.__dict__.update(kwds)
+  def dict(self):
+    return self.__dict__
 
 def main():
   e = Bunch()
@@ -24,7 +26,7 @@ def parse_log(e):
   with open(log_location_template%e.feature.lower()) as log:
     lines = log.readlines()
 
-  trials = []
+  e.trials = []
   i = 0
   while i < len(lines):
     l = lines[i]
@@ -37,14 +39,16 @@ def parse_log(e):
 
     # Model test output
     if l.find('[test') > -1:
-      trial = {}
-      trial['model_num'] = int(re.search('test (\d+)', l).group(1))
-      trial['model_at_rank'] = []
+      trial = Bunch() 
+      trial.trial_num = int(re.search('test (\d+)', l).group(1))
+      trial.model_ind = int(re.search('scanned model (\d+)', lines[i+1]).group(1))
+      trial.model_at_rank = []
       for j in range(4):
         # get the first number on the line
-        trial['model_at_rank'].append(int(re.search('^(\d+)', lines[i+3+j]).group(1)))
-      trial['detector_guess'] = int(re.search('detector guessed (\d+)', lines[i+3+4]).group(1))
-      trials.append(trial)
+        trial.model_at_rank.append(int(re.search('^(\d+)', lines[i+3+j]).group(1)))
+      trial.detector_guess = int(re.search('detector guessed (\d+)', lines[i+3+4]).group(1))
+      e.trials.append(trial)
+    e.num_trials = len(e.trials)
     
     # Overview output
     if l.find('[overview]') > -1:
@@ -69,6 +73,8 @@ def parse_log(e):
       # get the last numbers in the next two lines
       e.avg_rank = float(lines[i+1].split()[-1])
       e.auh = float(lines[i+2].split()[-1])
+      # NOTE: dividing by the total possible area to get a [0,1] number
+      e.auh /= e.num_models*e.num_trials
 
     if l.find('[confusion matrix]') > -1:
       # get the num_models lines following this one
@@ -81,19 +87,56 @@ def parse_log(e):
 
     i += 1
 
-  # TODO: load actual model_names
   model_name_location = "../writeups/model_names.txt"
   with open(model_name_location) as f:
     lines = f.readlines()
   e.model_names = [line.strip() for line in lines]
 
-  #pprint(trials)
+  pprint(e.trials[0].dict())
   print("Num correct: %s"%num_correct)
   print("AP: %s"%e.ap)
   print("AUH: %s"%e.auh)
   print("Average rank: %s"%e.avg_rank)
-  #plot_pr([e])
+  plot_pr([e])
   plot_confusion_matrix(e)
+  plot_rank_histogram(e)
+
+def rank_histogram_data(e):
+  # Go through and count the number of times the right model was rank-1,
+  # rank-2, etc.
+  # construct matrix of all the model_at_ranks
+  all_model_at_rank = zeros((e.num_trials,4))
+  correct_model = zeros((e.num_trials,1))
+  for i,trial in enumerate(e.trials):
+    all_model_at_rank[i,:] = trial.model_at_rank
+    correct_model[i] = trial.model_ind
+  # compare to the correct model
+  correct_model_at_rank = all_model_at_rank == tile(correct_model,(1,4))
+  # add a last column, which gets a 1 if none of the other columns have a 1
+  catchall_rank_col = array(sum(correct_model_at_rank,1)>0)
+  catchall_rank_col = transpose([catchall_rank_col]) # SERIOUSLY?
+  correct_model_at_rank = concatenate((correct_model_at_rank,catchall_rank_col),1)
+  counts = sum(correct_model_at_rank,0)
+  return counts
+
+def plot_rank_histogram(e):
+  """Takes an evaluation and outputs its rank histogram to file."""
+  clf()
+  counts = rank_histogram_data(e) 
+  counts_r = 1.*counts/sum(counts)
+  ind = arange(5)
+  width = 0.9
+  bar(ind,cumsum(counts_r),width=.9,color='black')
+  for i,count in enumerate(cumsum(counts_r)):
+    text(i+width/2.-.1, count*1.-.04, "%.3f"%count, color='white')
+  ranks = ['1','2','3','4','5+']
+  xticks(ind+width/2., ranks) 
+  xlabel('Number of top results within which the correct model is fetched')
+  #ylabel('Proportion')
+  title('Area under the rank histogram is %.3f'%e.auh)
+
+  filename = "%s_rankhist.png"%e.feature
+  savefig(filename)
 
 def plot_confusion_matrix(e):
   """Takes an evaluation and outputs its confusion matrix to file."""
@@ -122,14 +165,15 @@ def plot_confusion_matrix(e):
         else:
           text(j-.2, i+.2, "%.2f"%c, color='white', fontsize=12)
   cb = fig.colorbar(res)
-  xticks(arange(0,e.num_models), e.model_names)
-  yticks(arange(0,e.num_models), e.model_names)
+  xticks(arange(0,e.num_models), e.model_names, rotation=30, size='small')
+  yticks(arange(0,e.num_models), e.model_names, size='small')
 
   filename = "%s_confmat.png"%e.feature
   savefig(filename)
 
 def plot_pr(evaluations):
   """Takes a list of evaluations and plots their PR curves."""
+  clf()
   linestyles = ['-', '--', ':']
   lines = []
   for i,e in enumerate(evaluations):
