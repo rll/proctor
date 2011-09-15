@@ -11,6 +11,7 @@ class Evaluation:
   def __init__(self, eval_set, feature):
     log_filename = eval_set.log_location_template%feature 
     self.feature = feature
+    self.nice_name = feature.replace('_',' ')
 
     with open(log_filename) as log:
       lines = log.readlines()
@@ -41,6 +42,7 @@ class Evaluation:
       if l.find('[overview]') > -1:
         m = re.search('^(\d+)', lines[i+1]) # first number
         self.num_correct = int(m.group(1))
+        self.accuracy = 1.*self.num_correct / self.num_trials
 
       # Precision-Recall output
       if l.find('[precision-recall]') > -1:

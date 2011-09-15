@@ -12,6 +12,16 @@ from pylab import *
 from evaluation import Evaluation
 
 class EvalSet:
+  preamble="""\documentclass[10pt]{article}
+\usepackage[usenames]{color} %used for font color
+\usepackage{amssymb} %maths
+\usepackage{amsmath} %maths
+\usepackage[utf8]{inputenc} %useful to type directly diacritic characters
+\usepackage{multirow}
+\\begin{document}
+
+"""  
+
   def plot_pr(self,features=None):
     """Takes a list of features and plots their PR curves on the same plot."""
     if not features:
@@ -30,14 +40,11 @@ class EvalSet:
 
     self.savefig_wrap(features,'pr')
 
-  def print_comparison_table(self, features=None):
-    # TODO
-    return
-
   def print_info(self, feature):
     e = self.evals[feature]
     print("Feature: %s"%feature)
     print("  Num correct: %s"%e.num_correct)
+    print("  Accuracy: %s"%e.accuracy)
     print("  AP: %s"%e.ap)
     print("  Average rank: %s"%e.avg_rank)
     print("  AUH: %s"%e.auh)
@@ -108,6 +115,45 @@ class EvalSet:
     filename = self.plot_location+"%s_%s.png"%(feat_names,suffix)
     savefig(filename)
 
+  def print_comparison_table(self, features=None, pdf=True):
+    """
+    Outputs a .tex file containing a minimal preamble and the table of
+    results for the given features. Runs pdflatex to generate a pdf.
+    """
+    if not features:
+      features = self.features
+    evals = [self.evals[feature] for feature in features]
+    feat_names = '-'.join([f for f in features])
+    tex_filename = self.table_location+feat_names+"_table.tex"
+    pdf_filename = feat_names+"_table.pdf"
+    with open(tex_filename,'w') as f:
+      f.write(self.preamble)
+      table = '\n'.join([
+        '\\begin{tabular}{ | l || %s | }'%' | '.join(['l' for e in evals]),
+        '\hline',
+        'Metric & '+' & '.join([e.nice_name for e in evals])+' \\\\', 
+        '\hline',
+        #'\hline',
+        ' \% Correct & '+' & '.join(["%.2f"%(100.*e.accuracy) for e in evals])+' \\\\', 
+        #'\hline',
+        'AP & '+' & '.join(["%.3f"%e.ap for e in evals])+' \\\\', 
+        #'\hline',
+        'Avg. Rank & '+' & '.join(["%.3f"%e.avg_rank for e in evals])+' \\\\', 
+        #'\hline',
+        'AUH & '+' & '.join(["%.3f"%e.auh for e in evals])+' \\\\', 
+        '\hline',
+        '\end{tabular}'])
+      f.write(table)
+      f.write('\n\end{document}')
+    if pdf:
+      cmds = [
+          "cd %s"%self.table_location,
+          "make %s"%pdf_filename,
+          "mv %s %s1"%(pdf_filename,pdf_filename),
+          "make clean",
+          "mv %s1 %s"%(pdf_filename,pdf_filename)]
+      os.system(' && '.join(cmds))
+
 def main():
   """Goes through different features, outputting their evaluations, as well as
   a combined PR curve evaluation."""
@@ -124,23 +170,24 @@ def main():
   eval_set.plot_location = "../writeups/figures/"
   if not os.path.exists(eval_set.plot_location):
     os.makedirs(eval_set.plot_location)
+  eval_set.table_location = "../writeups/results/"
+  if not os.path.exists(eval_set.table_location):
+    os.makedirs(eval_set.table_location)
 
   # Parse the output log data for all the evaluations
   eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
   eval_set.evals = {}
   for feature in eval_set.features:
     eval_set.evals[feature] = Evaluation(eval_set, feature)
-    # print the info
     eval_set.print_info(feature)
-    # output plots
-    eval_set.plot_confusion_matrix(feature)
-    eval_set.plot_rank_histogram([feature])
-    eval_set.plot_pr([feature])
+    #eval_set.plot_confusion_matrix(feature)
+    #eval_set.plot_rank_histogram([feature])
+    #eval_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
   eval_set.print_comparison_table()
-  eval_set.plot_rank_histogram()
-  eval_set.plot_pr()
+  #eval_set.plot_rank_histogram()
+  #eval_set.plot_pr()
 
 if __name__ == '__main__':
   main()
