@@ -12,14 +12,12 @@ class Bunch:
   def __init__(self, **kwds):
     self.__dict__.update(kwds)
 
-
-
 def main():
-  evaluation = Bunch(
-      dataset="PSB",
-      feature="PFH",
-      data=None)
-  evaluation.data = parse_log(evaluation)
+  e = Bunch()
+  e.dataset="PSB"
+  e.feature="PFH"
+  e.data=None
+  e.data = parse_log(e)
 
 def parse_log(e):
   log_location_template = "../writeups/%s.out"
@@ -30,8 +28,13 @@ def parse_log(e):
   i = 0
   while i < len(lines):
     l = lines[i]
-    #print(l)
-    
+
+    # Get number of models
+    if l.find('[training]') > -1:
+      # get the integer in the line above this one
+      highest_model_ind = int(re.search('finished model (\d+)', lines[i-1]).group(1))
+      e.num_models = highest_model_ind+1
+
     # Model test output
     if l.find('[test') > -1:
       trial = {}
@@ -63,20 +66,67 @@ def parse_log(e):
       e.ap = VOCap(e.recall,e.precision)
 
     if l.find('[classifier stats]') > -1:
-      print("CLASSIFIER STATS HERE")
+      # get the last numbers in the next two lines
+      e.avg_rank = float(lines[i+1].split()[-1])
+      e.auh = float(lines[i+2].split()[-1])
 
     if l.find('[confusion matrix]') > -1:
-      print("CM HERE")
+      # get the num_models lines following this one
+      data = lines[i+1:i+1+e.num_models]
+      data = [line.strip() for line in data]
+      e.confusion_matrix = matrix(';'.join(data))
 
     if l.find('[timing]') > -1:
       print("TIMING HERE")
 
     i += 1
 
-  pprint(trials)
+  # TODO: load actual model_names
+  model_name_location = "../writeups/model_names.txt"
+  with open(model_name_location) as f:
+    lines = f.readlines()
+  e.model_names = [line.strip() for line in lines]
+
+  #pprint(trials)
   print("Num correct: %s"%num_correct)
   print("AP: %s"%e.ap)
-  plot_pr([e])
+  print("AUH: %s"%e.auh)
+  print("Average rank: %s"%e.avg_rank)
+  #plot_pr([e])
+  plot_confusion_matrix(e)
+
+def plot_confusion_matrix(e):
+  """Takes an evaluation and outputs its confusion matrix to file."""
+  # code from http://stackoverflow.com/questions/2897826/confusion-matrix-with-number-of-classified-misclassified-instances-on-it-python
+  conf_arr = e.confusion_matrix.tolist()
+
+  norm_conf = []
+  for i in conf_arr:
+    a = 0
+    tmp_arr = []
+    a = sum(i,0)
+    for j in i:
+      tmp_arr.append(float(j)/float(a))
+    norm_conf.append(tmp_arr)
+
+  clf()
+  fig = figure()
+  ax = fig.add_subplot(111)
+  res = ax.imshow(array(norm_conf), cmap=cm.gray_r, interpolation='nearest')
+  for i, cas in enumerate(norm_conf):
+    for j, c in enumerate(cas):
+      if c>0:
+        # TODO: adjust the location of the text
+        if c <= 0.5:
+          text(j-.2, i+.2, "%.2f"%c, color='black', fontsize=12)
+        else:
+          text(j-.2, i+.2, "%.2f"%c, color='white', fontsize=12)
+  cb = fig.colorbar(res)
+  xticks(arange(0,e.num_models), e.model_names)
+  yticks(arange(0,e.num_models), e.model_names)
+
+  filename = "%s_confmat.png"%e.feature
+  savefig(filename)
 
 def plot_pr(evaluations):
   """Takes a list of evaluations and plots their PR curves."""
@@ -90,7 +140,9 @@ def plot_pr(evaluations):
   xlabel('Recall')
   ylabel('Precision')
   grid(True)
-  savefig('temp.png')
+
+  filename = "%s_pr.png"%('-'.join([e.feature for e in evaluations]))
+  savefig(filename)
 
 def VOCap(rec,prec):
   mprec = hstack((0,prec,0))
