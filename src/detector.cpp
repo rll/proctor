@@ -225,6 +225,8 @@ PointCloud<Detector::Signature>::Ptr Detector::obtainFeatures(int mi, PointCloud
   if (ifstream(name)) {
     PointCloud<Signature>::Ptr features (new PointCloud<Signature>());
     io::loadPCDFile(name, *features);
+    if (features->points.size() != indices->size())
+      cout << "got " << features->points.size() << " features from " << indices->size() << " points" << endl;
     return features;
   } else {
     PointCloud<Signature>::Ptr features = computeFeatures(cloud, indices);
