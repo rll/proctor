@@ -6,7 +6,7 @@ tables that we could need for publication.
 import re
 from pprint import pprint
 import copy
-import pylab 
+from pylab import *
 
 class Bunch:
   def __init__(self, **kwds):
@@ -60,6 +60,7 @@ def parse_log(e):
         e.precision.append(float(numbers[0]))
         e.recall.append(float(numbers[1]))
         j += 1
+      e.ap = VOCap(e.recall,e.precision)
 
     if l.find('[classifier stats]') > -1:
       print("CLASSIFIER STATS HERE")
@@ -72,22 +73,35 @@ def parse_log(e):
 
     i += 1
 
-  #pprint(trials)
+  pprint(trials)
   print("Num correct: %s"%num_correct)
-  e2 = copy.deepcopy(e)
-  e2.precision = [x+0.05 for x in e.precision]
-  plot_pr([e,e2])
+  print("AP: %s"%e.ap)
+  plot_pr([e])
 
 def plot_pr(evaluations):
   """Takes a list of evaluations and plots their PR curves."""
+  linestyles = ['-', '--', ':']
   lines = []
-  for e in evaluations:
-    lines.append(pylab.plot(e.recall,e.precision,label=e.feature))
-  pylab.legend()
-  pylab.xlabel('Recall')
-  pylab.ylabel('Precision')
-  pylab.grid(True)
-  pylab.savefig('temp.png')
-    
+  for i,e in enumerate(evaluations):
+    label = "%s: %.3f"%(e.feature,e.ap)
+    lstyle = linestyles[mod(i,len(linestyles))]
+    lines.append(plot(e.recall,e.precision,lstyle,label=label))
+  legend()
+  xlabel('Recall')
+  ylabel('Precision')
+  grid(True)
+  savefig('temp.png')
+
+def VOCap(rec,prec):
+  mprec = hstack((0,prec,0))
+  mrec = hstack((0,rec,1))
+  # make sure prec is monotonically decreasing
+  for i in range(len(mprec)-1,0,-1):
+    mprec[i-1]=max(mprec[i-1],mprec[i])
+  # find piecewise area under the curve
+  i = add(nonzero(mrec[1:] != mrec[0:-1]),1)
+  ap=sum((mrec[i]-mrec[subtract(i,1)])*mprec[i])
+  return ap
+
 if __name__ == '__main__':
   main()
