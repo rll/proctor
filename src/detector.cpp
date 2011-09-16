@@ -183,14 +183,18 @@ void Detector::enableVisualization() {
 
 void Detector::printTimer() {
   printf(
-    "obtain training features: %10.3f sec\n"
-    "build feature tree:       %10.3f sec\n"
-    "compute testing features: %10.3f sec\n"
-    "voting classifier:        %10.3f sec\n"
-    "initial alignment:        %10.3f sec\n"
-    "ICP:                      %10.3f sec\n",
+    "select training keypoints: %10.3f sec\n"
+    "obtain training features:  %10.3f sec\n"
+    "build feature tree:        %10.3f sec\n"
+    "select testing keypoints:  %10.3f sec\n"
+    "compute testing features:  %10.3f sec\n"
+    "voting classifier:         %10.3f sec\n"
+    "initial alignment:         %10.3f sec\n"
+    "ICP:                       %10.3f sec\n",
+    timer[KEYPOINTS_TRAINING],
     timer[OBTAIN_FEATURES_TRAINING],
     timer[BUILD_TREE],
+    timer[KEYPOINTS_TESTING],
     timer[COMPUTE_FEATURES_TESTING],
     timer[VOTING_CLASSIFIER],
     timer[IA_RANSAC],
