@@ -38,10 +38,10 @@ class EvalSet:
     for i,e in enumerate(evals):
       label = "%s: %.3f"%(e.nice_name,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
-      plot(e.recall,e.precision,lstyle,label=label)
+      plot(e.recall,e.precision,lstyle,label=label,linewidth=3)
     legend(loc='lower left')
-    xlabel('Recall')
-    ylabel('Precision')
+    xlabel('Recall',size=16)
+    ylabel('Precision',size=16)
     grid(True)
 
     self.savefig_wrap(features,'pr')
@@ -76,10 +76,10 @@ class EvalSet:
           text(j+width/2.-.1, count*1.-.04, "%.2f"%count, color='white')
       bar(ind+i*width,cumsum(counts_r),color=color,width=width,label=label)
     ranks = [r'$\leq %s$'%x for x in [1,2,3,4]]
-    xticks(ind+0.5, ranks) 
-    yticks(linspace(0,1,5))
-    xlabel('Correct result fetched within K hits ')
-    ylabel('Proportion of trials')
+    xticks(ind+0.5, ranks,size=16)
+    yticks(linspace(0,1,5),size=16)
+    xlabel('Correct result fetched within K hits ',size=16)
+    ylabel('Proportion of trials',size=16)
     legend(loc='upper left')
     self.savefig_wrap(features,'rankhist')
     rc('text', usetex=False)
@@ -112,8 +112,8 @@ class EvalSet:
           else:
             text(j-.2, i+.2, "%.2f"%c, color='white', fontsize=12)
     #cb = fig.colorbar(res)
-    xticks(arange(0, self.num_models), self.model_names, rotation=30, size='small')
-    yticks(arange(0, self.num_models), self.model_names, size='small')
+    xticks(arange(0, self.num_models), self.model_names, rotation=30, size=16)
+    yticks(arange(0, self.num_models), self.model_names, size=16)
 
     self.savefig_wrap([feature],'confmat')
 
@@ -211,7 +211,9 @@ def main():
   Goes through different features, outputting their evaluations, as well as
   a combined PR curve evaluation.
   """
-  do_plot = False
+  do_plot = True 
+  #do_plot = False 
+
   eval_set = EvalSet()
   eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
