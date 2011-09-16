@@ -73,9 +73,20 @@ Timing information is crucial when selecting which feature to use for a task: a 
 The Timing Dashboard, seen in~\autoref{fig:PSB_timing} for the Princeton Shape Benchmark, provides both overall and detailed information about where time is spent in the pipeline.
 This data can allow focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
 
-The top-level view of timing is provided by parts (a) and (b) of the Dashboard
+The top-level view of timing is provided by part (a) of the Timing Dashboard, which compares the total time spent in training and testing for the evaluated features.
+
+For training, this can further be broken down into finding the keypoints at which to do feature description, doing the feature description, and constructing the KD-Tree of features.
+As it happens, only the feature description step has any significant time investment.
+As our reported implementation uses a dense feature grid, there is virtually no time spent on finding keypoints.
+In other implementation, this may of course change, and our plotting system is robust to it.
+The KD-Tree construction also takes virtually no time.
+\note{talk more about this? Radu?}
+
+Testing can be broken down into finding the keypoints, feature description, collecting votes from features, finding initial alignments from the features, and finally doing Iterative Closest Point \note{todo: cite} on the best few alignments (those that are past a distance threshold).
+Since these steps all incur meaningful time costs, we present the breakdowns visually in part (b) of the Dashboard (see~\autoref{fig:PSB_timing} for the Princeton Shape Benchmark).
 
 In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
+
 \begin{figure*}[thpb]
 \centering
 \subfloat[Total time spent in training and testing phases of the pipeline.]{\includegraphics[width=0.95\linewidth]{../figures/PSB/PFH-FPFH-SHOT-SPIN_IMAGE_timing_overview.png}} \\
@@ -93,4 +104,7 @@ In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q
 \caption{Timing results on the Willow Garage Grasping dataset.}
 \label{fig:WGDB_timing}
 \end{figure*}
+
+\subsection{Results}
+The results on two datasets, the Princeton Shape Benchmark, and the Willow Garage Grasping Dataset, are presented in Figures \ref{fig:PSB_dashboard,PSB_timing,WGDB_dashboard} and \ref{fig:WGDB_timing}.
 
