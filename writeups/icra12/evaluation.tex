@@ -1,21 +1,31 @@
 %!TEX root=./report.tex
 \section{EVALUATION}
 
-\subsection{Evaluation Metrics}
 As a reminder, our task is identifying the correct object model from a large database, given a scan of a model in an uncluttered scene.
+The detector should output one answer to this problem, although we also evaluate the process by which it arrives at the final answer.
+In our evaluations, we care about both accuracy and speed of the detector.
 
-We evaluate the correctness of our results with the following metrics:
+\subsection{Accuracy Dashboard}
+
+We evaluate the correctness of our results via the following scalar values
 \begin{itemize}
-  \item Percentage of ultimate guesses correct
-  \item Confusion matrix for ultimate guess
-  \item Precision-recall curve (using registration results)
-  \item Average rank of correct model (using voting results)
-  \item Area under the cumulative result-within-top-K histogram
+  \item Percentage of final results that are correct. This gives a rough idea of how well the detector is performing.
+  \item The Average Precision (AP), which is the area under the Precision-Recall curve for the registration accuracy of the final result. The AP is one of the most common scalar metrics of performance in computer vision~\cite{pascal-voc-2010}.
+  \item Average rank of correct model (using preliminary voting results). This number speaks to how well the features can get the right answer without any registration steps.
+  \item Area under the cumulative result-within-top-K histogram (using preliminary voting results). This gives a complementary picture to the average rank, as it describes the shape of the histogram instead of merely its mean. The maximum value is $1$, and the minimum value is $0.5$.
 \end{itemize}
 
-The results for the Princeton Shape Benchmark can be seen in~\ref{tab:PSB_results}
+These scalar metrics, in table form, form one part of our Accuracy Dashboard, seen in~\autoref{fig:PSB_dashboard}.
+The idea of the Dashboard is that each run of Proctor generates this complete set of results, all available in one place.
+Proctor outputs all figures and data for the dashboard, and generates an HTML page or a PDF document tying them together.
+In fact, ~\autoref{fig:PSB_dashboard} is an example of such an automatically-generated document.
 
-\begin{figure*}[h]
+The results for the Princeton Shape Benchmark can be seen in~\autoref{tab:PSB_results}
+
+In addition, we evaluate more qualitatevly by visualizing the confusion matrix between final results, and through plotting the Precision-Recall curves.
+These visualizations are also part of the dashboard, as seen in~\autoref{fig:PSB_dashboard}.
+
+\begin{figure*}[thpb]
 \centering
   \subfloat[Table of scalar measures of performance. The best number in each row is emphasized.]{
 \label{tab:PSB_results}
