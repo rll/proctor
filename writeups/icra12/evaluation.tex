@@ -79,12 +79,11 @@ The top-level view of timing is provided by part (a) of the Timing Dashboard, wh
 
 For training, this can further be broken down into finding the keypoints at which to do feature description, doing the feature description, and constructing the KD-Tree of features.
 As it happens, only the feature description step has any significant time investment.
-As our reported implementation uses a dense feature grid, there is virtually no time spent on finding keypoints.
-In other implementation, this may of course change, and our plotting system is robust to it.
-The KD-Tree construction also takes virtually no time.
-\note{talk more about this? Radu?}
+As our reported implementation constructs a dense grid of keypoints at which each feature descriptor is estimated, there is virtually no time spent on finding keypoints.
+For different types of keypoints, this may of course change. %and our plotting system is robust to it.
+The KD-Tree construction is extremely fast, as we are making use of FLANN~\cite{FLANN}.
 
-Testing can be broken down into finding the keypoints, feature description, collecting votes from features, finding initial alignments from the features, and finally doing Iterative Closest Point \note{todo: cite} on the best few alignments (those that are past a distance threshold).
+Testing can be broken down into finding the keypoints, feature description, collecting votes from features, finding initial alignments from the features, and finally doing Iterative Closest Point \cite{BeslMcKay} on the best few alignments (those that are past a distance threshold).
 Since these steps all incur meaningful time costs, we present the breakdowns visually in part (b) of the Dashboard (see~\autoref{fig:PSB_timing} for the Princeton Shape Benchmark).
 
 In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
