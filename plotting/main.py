@@ -115,8 +115,7 @@ class EvalSet:
     ind = arange(len(evals))
 
     clf()
-    fig, ((ax1, ax2, ax3, ax4)) = subplots(1, 4, figsize=(16,4), sharex=False, sharey=True)
-    fig.set_dpi(300)
+    fig, ((ax1, ax2, ax3, ax4)) = subplots(1, 4, figsize=(16,4), dpi=150, sharex=False, sharey=True)
     subplots_adjust(bottom=0.16,left=0.05,right=0.95)
     self.turn_off_up_right_axes(ax1)
     self.turn_off_up_right_axes(ax2)
@@ -315,24 +314,24 @@ def main():
   a combined PR curve evaluation.
   """
   do_plot = True 
-  do_plot = False 
+  #do_plot = False 
 
   # Set the basic things about this run
   # TODO: accept these from the command line
   e_set = EvalSet()
-  e_set.dataset = "PSB"
-  e_set.dataset_full = "Princeton Shape Benchmark"
+  e_set.dataset = "WGDB"
+  e_set.dataset_full = "Willow Garage Grasping Dataset"
   e_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
   # Load the common model names
-  model_name_location = "../writeups/model_names.txt"
+  model_name_location = "../results/model_names.txt"
   with open(model_name_location) as f:
     lines = f.readlines()
   e_set.model_names = [line.strip() for line in lines]
   e_set.num_models = len(e_set.model_names)
 
   # Set the paths to write out to, creating directories if needed
-  e_set.log_location_template = "../writeups/%s.out"
+  e_set.log_location_template = "../results/%s"%e_set.dataset.lower()+"/%s.out"
   e_set.plot_location = "../writeups/figures/%s/"%e_set.dataset
   if not os.path.exists(e_set.plot_location):
     os.makedirs(e_set.plot_location)
@@ -363,8 +362,8 @@ def main():
   e_set.plot_timing_panel()
 
   # Generate feature comparison table and latex figure
-  #e_set.print_comparison_table()
-  #e_set.generate_subfig()
+  e_set.print_comparison_table()
+  e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()
