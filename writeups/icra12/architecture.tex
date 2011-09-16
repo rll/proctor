@@ -17,7 +17,7 @@ Finally, it attempts to register the query scene with the likely candidates. Thi
 
 A custom detector must follow an interface with methods that take training data and test queries.
 For training, the detector receives the full point cloud of each model.
-For testing, the detector receives a range scan of some model, at some angle. It must output an estimated similarity for each candidate model, a more precise estimated distance to some candidate modelss, and a best guess of which model was scanned.
+For testing, the detector receives a range scan of some model, at some angle. It must output an estimated similarity for each candidate model, a more precise estimated distance to some candidate models, and a best guess of which model was scanned.
 In particular, we intend that detection systems that fit the description in the previous paragraph populate the similarities with classifier scores and populate the precise distances with euclidean distances after registration.
 Ultimately, the Detector class is intended to be something that algorithm authors shall edit.
 
@@ -31,6 +31,13 @@ During testing, the stock implementation starts the same way as training: it use
 For each keypoint in the query scene, the implementation searches the KdTree built during training for the four nearest neighbors in feature space. Each of these results contributes a vote for the corresponding model, weighted by the reciprocal of the $L^2$ distance between the scene feature vector and the model feature vector.
 The implementation then tries to register the query with the four candidate models that have the greatest total votes.
 This is done by first using the initial alignment algorithm described in section IV of the FPFH paper, then, running a few iterations of ICP.
+A screenshot of the visualization provided by the stock detector is provided in~\ref{fig:vis}.
+\begin{figure}[thpb]
+  \centering
+  \includegraphics[width=\columnwidth]{../figures/visualization.png}
+  \caption{Visualization of registration results in a particular test trial}
+  \label{fig:vis}
+\end{figure}
 
 The vote totals are output as the estimated likeness ratings.
 The registered distance from the four top canidates are returned as the estimated euclidean distances.
