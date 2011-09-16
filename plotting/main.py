@@ -138,7 +138,7 @@ class EvalSet:
       avg_ranks = [e.avg_rank for e in evals]
       auhs = [e.auh for e in evals]
       table = '\n'.join([
-        '\\begin{tabular}{ | l || %s | }'%' | '.join(['l' for e in evals]),
+        '\\begin{tabular}{ | l || %s | }'%' | '.join(['c' for e in evals]),
         '\hline',
         'Metric & '+' & '.join([e.nice_name for e in evals])+' \\\\', 
         '\hline',
@@ -172,6 +172,7 @@ r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_confmat.
 \caption{A table arranging images}
 \label{tab:gt}
 \end{table*}"""
+# TODO change the caption
     tex_filename = self.features_tex_filename_template%feat_names
     with open(tex_filename,'w') as f:
       f.write(subfig)
@@ -243,7 +244,7 @@ def main():
       eval_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
-  #eval_set.print_comparison_table()
+  eval_set.print_comparison_table()
   if do_plot:
     eval_set.plot_rank_histogram()
     eval_set.plot_pr()
