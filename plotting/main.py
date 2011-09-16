@@ -166,7 +166,7 @@ class EvalSet:
   & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
 """
     subfig += '\n'.join([
-r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_rankhist.png} \\'%(e.nice_name,e.feature,e.feature) for e in evals])
+r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s/%s_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s/%s_rankhist.png} \\'%(e.nice_name,self.dataset,e.feature,self.dataset,e.feature) for e in evals])
     subfig += r"""
 \end{tabular}
 \caption{A table arranging images}
@@ -197,7 +197,7 @@ r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_confmat.
   def process_features(self,features=None):
     """
     Returns the eval data and name string for the set of features passed in.
-    If nothing is passed in, uses all features of this eval_set.
+    If nothing is passed in, uses all features of this e_set.
     """
     if not features:
       features = self.features
@@ -205,54 +205,60 @@ r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_confmat.
     feat_names = '-'.join([f for f in features])
     return (evals,feat_names)
 
-
 def main():
   """
   Goes through different features, outputting their evaluations, as well as
   a combined PR curve evaluation.
   """
   do_plot = True 
-  #do_plot = False 
+  do_plot = False 
 
-  eval_set = EvalSet()
-  eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
+  # Set the basic things about this run
+  # TODO: accept these from the command line
+  e_set = EvalSet()
+  e_set.dataset = "PSB"
+  e_set.dataset_full = "Princeton Shape Benchmark"
+  e_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
-  # First, load the common model names
+  # Load the common model names
   model_name_location = "../writeups/model_names.txt"
   with open(model_name_location) as f:
     lines = f.readlines()
-  eval_set.model_names = [line.strip() for line in lines]
-  eval_set.num_models = len(eval_set.model_names)
-  eval_set.dataset = "PSB"
-  eval_set.log_location_template = "../writeups/%s.out"
-  eval_set.plot_location = "../writeups/figures/"
-  if not os.path.exists(eval_set.plot_location):
-    os.makedirs(eval_set.plot_location)
-  eval_set.table_location = "../writeups/results/"
-  if not os.path.exists(eval_set.table_location):
-    os.makedirs(eval_set.table_location)
-  eval_set.table_tex_filename_template = eval_set.table_location+'%s'+"_table.tex"
-  eval_set.features_tex_filename_template = eval_set.table_location+'%s'+"_features.tex"
+  e_set.model_names = [line.strip() for line in lines]
+  e_set.num_models = len(e_set.model_names)
 
+  # Set the paths to write out to, creating directories if needed
+  e_set.log_location_template = "../writeups/%s.out"
+  e_set.plot_location = "../writeups/figures/%s/"%e_set.dataset
+  if not os.path.exists(e_set.plot_location):
+    os.makedirs(e_set.plot_location)
+  e_set.table_location = "../writeups/results/"
+  if not os.path.exists(e_set.table_location):
+    os.makedirs(e_set.table_location)
+  # NOTE: We need the paths from these files to be the same as from the actual
+  # writeup, so we can't add an additional folder. Hence the name of the
+  # dataset as part of the filename.
+  e_set.table_tex_filename_template = e_set.table_location+e_set.dataset+'_%s_table.tex'
+  e_set.features_tex_filename_template = e_set.table_location+e_set.dataset+'_%s_features.tex'
 
-  # Parse the output log data for all the evaluations
-  eval_set.evals = {}
-  for feature in eval_set.features:
-    eval_set.evals[feature] = Evaluation(eval_set, feature)
-    eval_set.print_info(feature)
+  # Parse the output log data
+  e_set.evals = {}
+  for feature in e_set.features:
+    e_set.evals[feature] = Evaluation(e_set, feature)
+    e_set.print_info(feature)
     if do_plot:
-      eval_set.plot_confusion_matrix(feature)
-      eval_set.plot_rank_histogram([feature])
-      eval_set.plot_pr([feature])
+      e_set.plot_confusion_matrix(feature)
+      e_set.plot_rank_histogram([feature])
+      e_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
-  eval_set.print_comparison_table()
+  e_set.print_comparison_table()
   if do_plot:
-    eval_set.plot_rank_histogram()
-    eval_set.plot_pr()
+    e_set.plot_rank_histogram()
+    e_set.plot_pr()
 
   # Generate consolidation latex figure
-  eval_set.generate_subfig()
+  e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()
