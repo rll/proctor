@@ -13,6 +13,24 @@ We evaluate the correctness of our results with the following metrics:
   \item Area under the cumulative result-within-top-K histogram
 \end{itemize}
 
+%The results for the Princeton Shape Benchmark can be seen in~\autoref{tab:psb_results}
+%%\input{../results/PFH-FPFH-SHOT-SPIN_IMAGE_table.tex}
+%\begin{table}
+%\begin{center}
+%\begin{tabular}{ | l || l | l | l | l | }
+%\hline
+%Metric & PFH & FPFH & SHOT & SPIN IMAGE \\
+%\hline
+% \% Correct & 86.25 & 87.50 & 73.75 & 49.35 \\
+%AP & 0.850 & 0.855 & 0.635 & 0.307 \\
+%Avg. Rank & 2.250 & 2.160 & 2.300 & 3.960 \\
+%AUH & 0.844 & 0.855 & 0.838 & 0.654 \\
+%\hline
+%\end{tabular}
+%\end{center}
+%\label{tab:psb_results}
+%\end{table}
+
 An additional important evaluation is the runtime performance of different methods.
 This data allows focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
 Hence, we report timing results, split by the different stages of our pipeline, for all experimental conditions.
@@ -28,24 +46,7 @@ In all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB 
 
 * table of timing results
 
-\begin{table}
-\caption{An Example of a Table}
-\label{table_example}
-\begin{center}
-\begin{tabular}{|c||c|}
-\hline
-One & Two\\
-\hline
-Three & Four\\
-\hline
-\end{tabular}
-\end{center}
-\end{table}
-
-\begin{figure}[thpb]
-   \centering
-   %\includegraphics[scale=1.0]{figurefile}
-   \caption{Inductance of oscillation winding on amorphous
-    magnetic core versus DC bias magnetic field}
-   \label{figurelabel}
-\end{figure}
+%\begin{figure}[thpb]
+%   \centering
+%   \label{fig:results}
+%\end{figure}
