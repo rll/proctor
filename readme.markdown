@@ -10,7 +10,7 @@ Users can plug in a detection algorithm here.
 
 * `train` is called at training time with an array of registered point clouds. The detector should perform any preprocessing here.
 * `query` is called at test time with a range scan. The detector should populate the `distance` array with some measure of dissimilarity between the range scan and each model. It should return the index of the best guess model, which probably ought to be the one with least distance.
-* `enabledVisualization` may be called in the beginning, prior to any calls to `train` or `query`, to indicate that the detector should display its progress on screen.
+* `enableVisualization` may be called in the beginning, prior to any calls to `train` or `query`, to indicate that the detector should display its progress on screen.
 
 ### Stock Implementation
 
