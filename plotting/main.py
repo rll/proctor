@@ -66,7 +66,8 @@ class EvalSet:
     data_sources = ['train_total','test_total']
     for data_source in data_sources:
       data = [e.time[data_source] for e in evals]
-      ax = self.prep_bar()
+      ax = self.prep_bar((8,4))
+      subplots_adjust(bottom=0.16)
       barh(ind,data,color='black')
       for j,d in enumerate(data):
         text(d+max(data)*0.01, j+0.4, "%.2f"%d)
@@ -75,6 +76,13 @@ class EvalSet:
       xlabel('Time in seconds',size=16)
       ax.xaxis.grid(True)
       self.savefig_wrap(features,data_source)
+
+  def plot_timing_stacked(self, features=None):
+    evals,feat_names = self.process_features(features)
+    names = [e.nice_name for e in evals]
+    colors = ['blue','green','red','cyan']
+    width = 0.9
+    ind = arange(len(evals))
 
     self.prep_bar((8,4))
     feat_times = [e.time['test_features'] for e in evals]
@@ -319,12 +327,17 @@ def main():
   # Set the basic things about this run
   # TODO: accept these from the command line
   e_set = EvalSet()
-  e_set.dataset = "WGDB"
-  e_set.dataset_full = "Willow Garage Grasping Dataset"
+  dataset = "PSB"
+  if dataset == "WGDB":
+    e_set.dataset = "WGDB"
+    e_set.dataset_full = "Willow Garage Grasping Dataset"
+  else:
+    e_set.dataset = "PSB"
+    e_set.dataset_full = "Princeton Shape Benchmark"
   e_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
   # Load the common model names
-  model_name_location = "../results/model_names.txt"
+  model_name_location = "../results/%s/model_names.txt"%e_set.dataset.lower()
   with open(model_name_location) as f:
     lines = f.readlines()
   e_set.model_names = [line.strip() for line in lines]

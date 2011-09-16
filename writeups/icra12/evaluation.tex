@@ -62,11 +62,21 @@ Timing information is crucial when selecting which feature to use for a task: a 
 \end{figure*}
 
 The Timing Dashboard, seen in~\autoref{fig:PSB_timing} for the Princeton Shape Benchmark, provides both overall and detailed information about where time is spent in the pipeline.
-This data allows focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
+This data can allow focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
 
-\note{TODO explain the components of the timing dashboard.}
+The top-level view of timing is provided by parts (a) and (b) of the 
 
 In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
+
+\begin{figure*}[thpb]
+\centering
+\subfloat[Total time spent in training.]{\includegraphics[width=0.45\linewidth]{../figures/WGDB/PFH-FPFH-SHOT-SPIN_IMAGE_train_total.png}}
+\subfloat[Total time spent in testing.]{\includegraphics[width=0.45\linewidth]{../figures/WGDB/PFH-FPFH-SHOT-SPIN_IMAGE_test_total.png}} \\
+\vspace{1em}
+\subfloat[Breakdown of where time is spent in the testing phase.]{\includegraphics[width=0.95\linewidth]{../figures/WGDB/PFH-FPFH-SHOT-SPIN_IMAGE_timing_test_panel.png}} 
+\caption{Timing results on the Willow Garage Grasping dataset.}
+\label{fig:WGDB_timing}
+\end{figure*}
 
 \begin{figure*}[thpb]
 \centering
