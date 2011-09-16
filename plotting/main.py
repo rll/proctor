@@ -248,14 +248,15 @@ class EvalSet:
     Optionally, also generates a .pdf containing this with a minimal preamble.
     """
     evals,feat_names = self.process_features(features)
+    col_widths = (0.08, 0.35, 0.35)
     subfig = r"""
 \begin{table*}
 \centering
-\begin{tabular}{m{0.08\textwidth} m{0.45\textwidth} m{0.45\textwidth}}
+\begin{tabular}{m{%s\textwidth} m{%s\textwidth} m{%s\textwidth}}
   & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
-"""
+"""%col_widths
     subfig += '\n'.join([
-r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s/%s_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s/%s_rankhist.png} \\'%(e.nice_name,self.dataset,e.feature,self.dataset,e.feature) for e in evals])
+r'  %(name)s & \includegraphics[width=%(width1)s\textwidth,clip=true]{../figures/%(dataset)s/%(feature)s_confmat.png} & \includegraphics[width=%(width2)s\textwidth,clip=true]{../figures/%(dataset)s/%(feature)s_rankhist.png} \\' % dict(name=e.nice_name, dataset=self.dataset, feature = e.feature, width1 = col_widths[1], width2 = col_widths[2]) for e in evals])
     subfig += r"""
 \end{tabular}
 \caption{A table arranging images}
@@ -344,11 +345,11 @@ def main():
   if do_plot:
     e_set.plot_rank_histogram()
     e_set.plot_pr()
-  e_set.plot_timing()
+    e_set.plot_timing()
 
   # Generate feature comparison table and latex figure
   #e_set.print_comparison_table()
-  #e_set.generate_subfig()
+  e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()

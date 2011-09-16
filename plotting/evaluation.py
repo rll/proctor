@@ -14,7 +14,7 @@ class Evaluation:
     self.nice_name = self.feature.replace('_',' ')
     # NOTE: special case
     if self.feature=='SPIN_IMAGE':
-      self.nice_name = 'Spin Image'
+      self.nice_name = 'Spin'
 
     with open(log_filename) as log:
       lines = log.readlines()
