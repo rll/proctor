@@ -1,5 +1,6 @@
 import re
 from pylab import *
+from pprint import pprint 
 
 class Bunch:
   def __init__(self, **kwds):
@@ -41,6 +42,8 @@ class Evaluation:
           None
           # it's okay, detector just failed to find matches
         self.num_trials = len(self.trials)
+        self.counts = self.rank_histogram_data()
+        self.auh_inferred = sum([8,7,6,5,4] * self.counts)/640.
       
       # Overview output
       if l.find('[overview]') > -1:
@@ -110,7 +113,7 @@ class Evaluation:
     # compare to the correct model
     correct_model_at_rank = all_model_at_rank == tile(correct_model,(1,4))
     # add a last column, which gets a 1 if none of the other columns have a 1
-    catchall_rank_col = array(sum(correct_model_at_rank,1)>0)
+    catchall_rank_col = array(sum(correct_model_at_rank,1)==0)
     catchall_rank_col = transpose([catchall_rank_col]) # SERIOUSLY?
     correct_model_at_rank = concatenate((correct_model_at_rank,catchall_rank_col),1)
     counts = sum(correct_model_at_rank,0)

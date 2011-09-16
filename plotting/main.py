@@ -34,11 +34,12 @@ class EvalSet:
     """Takes a list of features and plots their PR curves on the same plot."""
     evals,feat_names = self.process_features(features)
     clf()
+    colors = ['blue','gold','green','magenta']
     linestyles = ['-', '--', ':']
     for i,e in enumerate(evals):
       label = "%s: %.3f"%(e.nice_name,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
-      plot(e.recall,e.precision,lstyle,label=label,linewidth=3)
+      plot(e.recall,e.precision,lstyle,label=label,linewidth=3,color=colors[i])
     legend(loc='lower left')
     xlabel('Recall',size=16)
     ylabel('Precision',size=16)
@@ -53,13 +54,14 @@ class EvalSet:
     print("  Accuracy: %s"%e.accuracy)
     print("  AP: %s"%e.ap)
     print("  Average rank: %s"%e.avg_rank)
-    print("  AUH: %s"%e.auh)
+    print("  AUCR: %s"%e.auh)
+    print("  AUCR inferred: %s"%e.auh_inferred)
     pprint(e.time)
 
   def plot_timing(self, features=None):
     evals,feat_names = self.process_features(features)
     names = [e.nice_name for e in evals]
-    colors = ['blue','green','red','cyan']
+    colors = ['blue','gold','green','magenta']
     width = 0.9
     ind = arange(len(evals))
 
@@ -75,7 +77,7 @@ class EvalSet:
     titles = ['Training','Testing']
     for ax,data_source,ti in zip(axs,data_sources,titles):
       data = [e.time[data_source] for e in evals]
-      ax.barh(ind,data,color='black')
+      ax.barh(ind,data,color='gray')
       for j,d in enumerate(data):
         ax.text(d+max(data)*0.02, j+0.35, "%.2f"%d)
       yticks(ind+0.5,names,size=16)
@@ -88,7 +90,7 @@ class EvalSet:
   def plot_timing_stacked(self, features=None):
     evals,feat_names = self.process_features(features)
     names = [e.nice_name for e in evals]
-    colors = ['blue','green','red','cyan']
+    colors = ['blue','gold','green','magenta']
     width = 0.9
     ind = arange(len(evals))
 
@@ -126,7 +128,7 @@ class EvalSet:
   def plot_timing_panel(self, features=None):
     evals,feat_names = self.process_features(features)
     names = [e.nice_name for e in evals]
-    colors = ['blue','green','red','cyan']
+    colors = ['blue','gold','green','magenta']
     width = 0.9
     ind = arange(len(evals))
 
@@ -147,7 +149,7 @@ class EvalSet:
 
     for ax,data_source,ti in zip(axs,data_sources,titles):
       times = [e.time[data_source] for e in evals]
-      ax.barh(ind,times,color='black')
+      ax.barh(ind,times,color='gray')
       for j,d in enumerate(times):
         ax.text(d+max(times)*0.02, j+0.35, "%.2f"%d)
       ax.xaxis.grid(True)
@@ -173,21 +175,21 @@ class EvalSet:
 
   def plot_rank_histogram(self, features=None):
     evals,feat_names = self.process_features(features)
-    colors = ['blue','green','red','cyan']
+    colors = ['blue','gold','green','magenta']
     rc('text', usetex=True)
     clf()
     width = .9/len(evals)
     ind = arange(4)
     for i,e in enumerate(evals):
-      counts = e.rank_histogram_data() 
+      counts = e.counts 
       counts = counts[:4] # not using the catchall column
       counts_r = 1.*counts/(e.num_trials)
       color = colors[mod(i, len(colors))]
       # only print the value if doing one feature
-      label = '%s: %.3f'%(e.nice_name, e.auh)
+      label = '%s: %.3f'%(e.nice_name, e.auh_inferred)
       if len(evals)==1:
-        label = '%.3f'%e.auh
-        color = 'black'
+        label = '%.3f'%e.auh_inferred
+        color = 'gray'
         for j,count in enumerate(cumsum(counts_r)):
           text(j+width/2.-.1, count*1.-.04, "%.2f"%count, color='white')
       bar(ind+i*width,cumsum(counts_r),color=color,width=width,label=label)
@@ -252,7 +254,7 @@ class EvalSet:
       accuracies = [100*e.accuracy for e in evals]
       aps = [e.ap for e in evals]
       avg_ranks = [e.avg_rank for e in evals]
-      auhs = [e.auh for e in evals]
+      auhs = [e.auh_inferred for e in evals]
       table = '\n'.join([
         '\\begin{tabular}{ | l || %s | }'%' | '.join(['c' for e in evals]),
         '\hline',
@@ -261,7 +263,7 @@ class EvalSet:
         ' \% Correct & '+print_with_max(accuracies)+' \\\\', 
         'AP & '+print_with_max(aps)+' \\\\', 
         'Avg. Rank & '+print_with_min(avg_ranks)+' \\\\', 
-        'AUH & '+print_with_max(auhs)+' \\\\', 
+        'AUCR & '+print_with_max(auhs)+' \\\\', 
         '\hline',
         '\end{tabular}'])
       f.write(table)
@@ -324,18 +326,17 @@ r'  %(name)s & \includegraphics[width=%(width1)s\textwidth,clip=true]{../figures
     feat_names = '-'.join([f for f in features])
     return (evals,feat_names)
 
-def main():
+def main(dataset):
   """
   Goes through different features, outputting their evaluations, as well as
   a combined PR curve evaluation.
   """
   do_plot = True 
-  do_plot = False 
+  #do_plot = False 
 
   # Set the basic things about this run
   # TODO: accept these from the command line
   e_set = EvalSet()
-  dataset = "WGDB"
   if dataset == "WGDB":
     e_set.dataset = "WGDB"
     e_set.dataset_full = "Willow Garage Grasping Dataset"
@@ -372,8 +373,8 @@ def main():
     e_set.print_info(feature)
     if do_plot:
       e_set.plot_confusion_matrix(feature)
-      e_set.plot_rank_histogram([feature])
       e_set.plot_pr([feature])
+      e_set.plot_rank_histogram([feature])
 
   # Print feature comparison table and output PR plot
   if do_plot:
@@ -381,11 +382,11 @@ def main():
     e_set.plot_pr()
     e_set.plot_timing()
     e_set.plot_timing_panel()
-  e_set.plot_timing()
 
   # Generate feature comparison table and latex figure
-  #e_set.print_comparison_table()
-  #e_set.generate_subfig()
+  e_set.print_comparison_table(pdf=False)
+  e_set.generate_subfig(pdf=False)
 
 if __name__ == '__main__':
-  main()
+  main("WGDB")
+  main("PSB")
