@@ -1,11 +1,11 @@
 %!TEX root=./report.tex
 \section{ARCHITECTURE AND IMPLEMENTATION}
-Our evaluation framework is built around classes from PCL \cite{PCL} and VTK \cite{vtk}.
+Our evaluation framework is built around classes from PCL~\cite{PCL} and VTK~\cite{vtk}.
 The stock detection algorithm relies heavily PCL, which does all of the lower level work.
 We use the Princeton Shape Benchmark.
-Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner \cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
+Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner~\cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
 
-Our evaluation framework has two major parts. First is the Detector class, which houses the detection logic. Second is the Proctor class, which generates tests and reports.
+Our evaluation framework has two major parts. First is the Detector class, which houses the detection logic. Second is the Proctor class, which generates tests and reports. These are illustrated in \autoref{fig:arch}.
 
 \begin{figure}[thpb]
   \centering
@@ -28,7 +28,7 @@ Ultimately, the Detector class is intended to be something that algorithm author
 
 \subsubsection{Primary Stock Detector}
 We are publishing the current contribution with a few stock detectors, which serve as both a scaffolding for modular enhancements and baselines for larger efforts.
-The primary stock implementation makes use of Fast Point Feature Histograms \cite{fpfh1, fpfh2}, a voting-based classification algorithm, and registration.
+The primary stock implementation makes use of Fast Point Feature Histograms~\cite{fpfh1, fpfh2}, a voting-based classification algorithm, and registration.
 
 During training, the stock implementation divides the points of each model into uniform voxels. For each voxel, it picks a representative point that is closest to the centroid of the voxel. This subset is a dense keypoint sampling of the model. It computes the FPFH centered at each of the keypoints. A KdTree is built from these feature histograms and stored for later use.
 
@@ -36,7 +36,7 @@ During testing, the stock implementation starts the same way as training: it use
 For each keypoint in the query scene, the implementation searches the KdTree built during training for the four nearest neighbors in feature space. Each of these results contributes a vote for the corresponding model, weighted by the reciprocal of the $L^2$ distance between the scene feature vector and the model feature vector.
 The implementation then tries to register the query with the four candidate models that have the greatest total votes.
 This is done by first using the initial alignment algorithm described in section IV of the FPFH paper, then, running a few iterations of ICP.
-A screenshot of the visualization provided by the stock detector is provided in~\ref{fig:vis}.
+A screenshot of the visualization provided by the stock detector is provided in \autoref{fig:vis}.
 \begin{figure}[thpb]
   \centering
   \includegraphics[width=\columnwidth]{../figures/visualization.png}
@@ -49,7 +49,7 @@ The registered distance from the four top canidates are returned as the estimate
 Finally, the model that registers most closely with the scene is selected as the detected model.
 
 \subsubsection{Stock Variants}
-The other detectors that we are publishing are variants that replace FPFH with other local features supported by PCL. There are branches using PFH \cite{pfh1, pfh2}, spin images \cite{SpinImages}, and SHOT \cite{shot}.
+The other detectors that we are publishing are variants that replace FPFH with other local features supported by PCL. There are branches using PFH~\cite{pfh1, pfh2}, spin images~\cite{SpinImages}, and SHOT~\cite{shot}.
 The classification and registration mechanisms remain the same.
 
 \subsection{Proctor}
