@@ -28,9 +28,8 @@ class EvalSet:
     evals,feat_names = self.process_features(features)
     clf()
     linestyles = ['-', '--', ':']
-    for i,f in enumerate(features):
-      e = self.evals[f]
-      label = "%s: %.3f"%(e.feature,e.ap)
+    for i,e in enumerate(evals):
+      label = "%s: %.3f"%(e.nice_name,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
       plot(e.recall,e.precision,lstyle,label=label)
     legend(loc='lower left')
@@ -52,27 +51,31 @@ class EvalSet:
   def plot_rank_histogram(self, features=None):
     evals,feat_names = self.process_features(features)
     colors = ['blue','green','red','cyan']
+    rc('text', usetex=True)
     clf()
-    width = .9/len(features)
-    ind = arange(5)
-    for i,feature in enumerate(features):
-      e = self.evals[feature]
+    width = .9/len(evals)
+    ind = arange(4)
+    for i,e in enumerate(evals):
       counts = e.rank_histogram_data() 
-      counts_r = 1.*counts/sum(counts)
+      counts = counts[:4] # not using the catchall column
+      counts_r = 1.*counts/(e.num_trials)
       color = colors[mod(i, len(colors))]
       # only print the value if doing one feature
-      if len(features)==1:
+      label = '%s: %.3f'%(e.nice_name, e.auh)
+      if len(evals)==1:
+        label = '%.3f'%e.auh
         color = 'black'
         for j,count in enumerate(cumsum(counts_r)):
-          text(j+width/2.-.1, count*1.-.04, "%.3f"%count, color='white')
-      bar(ind+i*width,cumsum(counts_r),color=color,width=width,label=feature)
-    ranks = ['1','2','3','4','5+']
-    xticks(ind+width/2., ranks) 
-    xlabel('Number of top results within which the correct model is fetched')
-    title('Area under the rank histogram is %.3f.'%e.auh)
-    if len(features)>1:
-      legend(loc='upper left')
+          text(j+width/2.-.1, count*1.-.04, "%.2f"%count, color='white')
+      bar(ind+i*width,cumsum(counts_r),color=color,width=width,label=label)
+    ranks = [r'$\leq %s$'%x for x in [1,2,3,4]]
+    xticks(ind+0.5, ranks) 
+    yticks(linspace(0,1,5))
+    xlabel('Correct result fetched within K hits ')
+    ylabel('Proportion of trials')
+    legend(loc='upper left')
     self.savefig_wrap(features,'rankhist')
+    rc('text', usetex=False)
 
   def plot_confusion_matrix(self,feature):
     """Takes an evaluation and outputs its confusion matrix to file."""
@@ -101,7 +104,7 @@ class EvalSet:
             text(j-.2, i+.2, "%.2f"%c, color='black', fontsize=12)
           else:
             text(j-.2, i+.2, "%.2f"%c, color='white', fontsize=12)
-    cb = fig.colorbar(res)
+    #cb = fig.colorbar(res)
     xticks(arange(0, self.num_models), self.model_names, rotation=30, size='small')
     yticks(arange(0, self.num_models), self.model_names, size='small')
 
@@ -208,14 +211,14 @@ def main():
   for feature in eval_set.features:
     eval_set.evals[feature] = Evaluation(eval_set, feature)
     eval_set.print_info(feature)
-    #eval_set.plot_confusion_matrix(feature)
-    #eval_set.plot_rank_histogram([feature])
-    #eval_set.plot_pr([feature])
+    eval_set.plot_confusion_matrix(feature)
+    eval_set.plot_rank_histogram([feature])
+    eval_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
   eval_set.print_comparison_table()
-  #eval_set.plot_rank_histogram()
-  #eval_set.plot_pr()
+  eval_set.plot_rank_histogram()
+  eval_set.plot_pr()
 
   # Generate consolidation latex figure
   eval_set.generate_subfig()
