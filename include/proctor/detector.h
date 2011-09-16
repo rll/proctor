@@ -25,8 +25,10 @@ public:
   static const int num_registration = 4;
 
   enum TimerBin {
+    KEYPOINTS_TRAINING,
     OBTAIN_FEATURES_TRAINING,
     BUILD_TREE,
+    KEYPOINTS_TESTING,
     COMPUTE_FEATURES_TESTING,
     VOTING_CLASSIFIER,
     IA_RANSAC,

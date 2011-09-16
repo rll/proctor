@@ -209,11 +209,13 @@ void Proctor::printClassifierStats() {
     float votes = classifier[ni][answer];
     // figure out the rank in this trial
     int rank = 1;
+    int tie = 0;
     for (int mi = 0; mi < Config::num_models; mi++) {
       if (classifier[ni][mi] > votes) rank++;
+      else if (classifier[ni][mi] == votes) tie++;
     }
     // contribute to average rank
-    avg += rank;
+    avg += rank + float(tie) / 2;
     // contribute to area under curve
     area += Config::num_models - rank + 1;
   }

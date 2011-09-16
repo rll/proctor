@@ -1,6 +1,6 @@
 %!TEX root=./report.tex
 \section{ARCHITECTURE AND IMPLEMENTATION}
-Our evaluation framework is built around classes from PCL and VTK.
+Our evaluation framework is built around classes from PCL \cite{Rusu2011} and VTK \cite{vtk}.
 The stock detection algorithm relies heavily PCL, which does all of the lower level work.
 We use the Princeton Shape Benchmark.
 Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner \cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
