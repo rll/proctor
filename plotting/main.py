@@ -25,8 +25,7 @@ class EvalSet:
 
   def plot_pr(self,features=None):
     """Takes a list of features and plots their PR curves on the same plot."""
-    if not features:
-      features = self.features
+    evals,feat_names = self.process_features(features)
     clf()
     linestyles = ['-', '--', ':']
     for i,f in enumerate(features):
@@ -51,9 +50,7 @@ class EvalSet:
     print("  AUH: %s"%e.auh)
 
   def plot_rank_histogram(self, features=None):
-    if not features:
-      features = self.features
-
+    evals,feat_names = self.process_features(features)
     colors = ['blue','green','red','cyan']
     clf()
     width = .9/len(features)
@@ -112,7 +109,7 @@ class EvalSet:
 
   def savefig_wrap(self, features, suffix):
     """Saves the plot to a canonical name."""
-    feat_names = '-'.join([f for f in features])
+    evals,feat_names = self.process_features(features)
     filename = self.plot_location+"%s_%s.png"%(feat_names,suffix)
     savefig(filename)
 
@@ -121,10 +118,7 @@ class EvalSet:
     Outputs a .tex file containing the table of results for the given features.
     Optionally, also generates a .pdf containing this with a minimal preamble.
     """
-    if not features:
-      features = self.features
-    evals = [self.evals[feature] for feature in features]
-    feat_names = '-'.join([f for f in features])
+    evals,feat_names = self.process_features(features)
     tex_filename = self.table_tex_filename_template%feat_names
     with open(tex_filename,'w') as f:
       print_with_max = lambda numbers: ' & '.join(["\\bf %.2f"%x if x==max(numbers) else "%.2f"%x for x in numbers])
@@ -145,20 +139,22 @@ class EvalSet:
         '\end{tabular}'])
       f.write(table)
     if pdf:
-      pdf_tex_filename = tex_filename[:-4]+'_preview.tex'
-      with open(pdf_tex_filename,'w') as f:
-        f.write(self.preamble)
-        f.write('\input{%s}'%os.path.basename(tex_filename))
-        f.write('\n\end{document}')
-      pdf_filename = os.path.basename(pdf_tex_filename)[:-4]+'.pdf'
-      cmds = [
-          "cd %s"%self.table_location,
-          "make %s"%pdf_filename,
-          "mv %s %s1"%(pdf_filename,pdf_filename),
-          "make clean",
-          "mv %s1 %s"%(pdf_filename,pdf_filename)]
-      pprint(cmds)
-      os.system(' && '.join(cmds))
+      self.preview_pdf(tex_filename)
+
+  def preview_pdf(self,tex_filename):
+    pdf_tex_filename = tex_filename[:-4]+'_preview.tex'
+    with open(pdf_tex_filename,'w') as f:
+      f.write(self.preamble)
+      f.write('\input{%s}'%os.path.basename(tex_filename))
+      f.write('\n\end{document}')
+    pdf_filename = os.path.basename(pdf_tex_filename)[:-4]+'.pdf'
+    cmds = [
+        "cd %s"%self.table_location,
+        "make %s"%pdf_filename,
+        "mv %s %s1"%(pdf_filename,pdf_filename),
+        "make clean",
+        "mv %s1 %s"%(pdf_filename,pdf_filename)]
+    os.system(' && '.join(cmds))
 
   def generate_subfig(self,features=None,pdf=True):
     """
@@ -166,6 +162,19 @@ class EvalSet:
     for the given features.
     Optionally, also generates a .pdf containing this with a minimal preamble.
     """
+    evals,feat_names = self.process_features(features)
+
+  def process_features(self,features=None):
+    """
+    Returns the eval data and name string for the set of features passed in.
+    If nothing is passed in, uses all features of this eval_set.
+    """
+    if not features:
+      features = self.features
+    evals = [self.evals[feature] for feature in features]
+    feat_names = '-'.join([f for f in features])
+    return (evals,feat_names)
+
 
 def main():
   """
