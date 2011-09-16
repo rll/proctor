@@ -11,19 +11,9 @@ We evaluate the correctness of our results via the following scalar values
 \begin{itemize}
   \item Percentage of final results that are correct. This gives a rough idea of how well the detector is performing.
   \item The Average Precision (AP), which is the area under the Precision-Recall curve for the registration accuracy of the final result. The AP is one of the most common scalar metrics of performance in computer vision~\cite{pascal-voc-2010}.
-  \item Average rank of correct model (using preliminary voting results). This number speaks to how well the features can get the right answer without any registration steps.
-  \item Area under the cumulative result-within-top-K histogram (using preliminary voting results). This gives a complementary picture to the average rank, as it describes the shape of the histogram instead of merely its mean. The maximum value is $1$, and the minimum value is $0.5$.
+  \item Average Rank (AR) of correct model (using preliminary voting results). This number speaks to how well the features can get the right answer without any registration steps.
+  \item Area Under the Cumulative Result-within-top-K histogram (AUCR) (using preliminary voting results). This gives a complementary picture to the average rank, as it describes the shape of the histogram instead of merely its mean. The maximum value is $1$, and the minimum value is $0.5$.
 \end{itemize}
-
-These scalar metrics, in table form, form one part of our Accuracy Dashboard, seen in~\autoref{fig:PSB_dashboard}.
-The idea of the Dashboard is that each run of Proctor generates this complete set of results, all available in one place.
-Proctor outputs all figures and data for the dashboard, and generates an HTML page or a PDF document tying them together.
-In fact, ~\autoref{fig:PSB_dashboard} is an example of such an automatically-generated document.
-
-The results for the Princeton Shape Benchmark can be seen in~\autoref{tab:PSB_results}
-
-In addition, we evaluate more qualitatevly by visualizing the confusion matrix between final results, and through plotting the Precision-Recall curves.
-These visualizations are also part of the dashboard, as seen in~\autoref{fig:PSB_dashboard}.
 
 \begin{figure*}[thpb]
 \centering
@@ -44,6 +34,23 @@ These visualizations are also part of the dashboard, as seen in~\autoref{fig:PSB
   \label{fig:PSB_dashboard}
 \end{figure*}
 
+These scalar metrics, in table form, form one part of our Accuracy Dashboard, seen in~\autoref{fig:PSB_dashboard} for the Princeton Shape Benchmark.
+The idea of the Dashboard is that each run of Proctor generates this complete set of results, all available in one place.
+Proctor outputs all figures and data for the dashboard, and generates an HTML page or a PDF document tying them together.
+In fact, ~\autoref{fig:PSB_dashboard} is an example of such an automatically-generated document---we simply inserted it into this paper's source.
+
+In addition to the scalar metrics, which are useful for a summary comparison of different features or algorithms, the Dashboard provides visualization of three things:
+\begin{itemize}
+  \item For each feature, the confusion matrix between final results. This can be a useful tool to understand the behavior of the detector and a source of information for tuning the approach.
+  \item Precision-Recall curves comparing all features. It is valuable to know whether a feature results in High-Precision, Low-Recall performance (such as requested by the Solutions in Perception Challenge \cite{SIPC2011}) or Low-Precision, High-Recall performance. By itself, the AP does not provide this information.
+  \item The cumulative result-within-top-K histogram comparing all features. Once again, although we have both the Average Rank and the AUCR measures, it is valuable to see the shape of the histogram.
+\end{itemize}
+
+\subsection{Timing Dashboard}
+
+Correctness is but one side of performance.
+Timing information is crucial when selecting which feature to use for a task: a real-time robotics application has fundamentally different constraints than an offline large database matching application.
+
 \begin{figure*}[thpb]
 \centering
 \subfloat[Total time spent in training.]{\includegraphics[width=0.45\linewidth]{../figures/PSB/PFH-FPFH-SHOT-SPIN_IMAGE_train_total.png}}
@@ -54,19 +61,9 @@ These visualizations are also part of the dashboard, as seen in~\autoref{fig:PSB
 \label{fig:PSB_timing}
 \end{figure*}
 
-%\input{../results/PSB_PFH-FPFH-SHOT-SPIN_IMAGE_features.tex}
-
-An additional important evaluation is the runtime performance of different methods.
+The Timing Dashboard, seen in~\autoref{fig:PSB_timing} for the Princeton Shape Benchmark, provides both overall and detailed information about where time is spent in the pipeline.
 This data allows focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
-Hence, we report timing results, split by the different stages of our pipeline, for all experimental conditions.
-In all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
 
-* table per dataset
+\note{TODO explain the components of the timing dashboard.}
 
-* features vs. metrics
-
-* plots of the same data that's in the tables?
-
-* confusion matrix figures
-
-* table of timing results
+In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q9300 with 4 GB of RAM.
