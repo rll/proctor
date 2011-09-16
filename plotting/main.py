@@ -18,6 +18,7 @@ class EvalSet:
 \usepackage{amsmath} %maths
 \usepackage[utf8]{inputenc} %useful to type directly diacritic characters
 \usepackage{multirow}
+\usepackage{subfig}
 \\begin{document}
 
 """  
@@ -115,49 +116,64 @@ class EvalSet:
     filename = self.plot_location+"%s_%s.png"%(feat_names,suffix)
     savefig(filename)
 
-  def print_comparison_table(self, features=None, pdf=True):
+  def print_comparison_table(self,features=None,pdf=True):
     """
-    Outputs a .tex file containing a minimal preamble and the table of
-    results for the given features. Runs pdflatex to generate a pdf.
+    Outputs a .tex file containing the table of results for the given features.
+    Optionally, also generates a .pdf containing this with a minimal preamble.
     """
     if not features:
       features = self.features
     evals = [self.evals[feature] for feature in features]
     feat_names = '-'.join([f for f in features])
-    tex_filename = self.table_location+feat_names+"_table.tex"
-    pdf_filename = feat_names+"_table.pdf"
+    tex_filename = self.table_tex_filename_template%feat_names
     with open(tex_filename,'w') as f:
-      f.write(self.preamble)
+      print_with_max = lambda numbers: ' & '.join(["\\bf %.2f"%x if x==max(numbers) else "%.2f"%x for x in numbers])
+      accuracies = [100*e.accuracy for e in evals]
+      aps = [e.ap for e in evals]
+      avg_ranks = [e.avg_rank for e in evals]
+      auhs = [e.auh for e in evals]
       table = '\n'.join([
         '\\begin{tabular}{ | l || %s | }'%' | '.join(['l' for e in evals]),
         '\hline',
         'Metric & '+' & '.join([e.nice_name for e in evals])+' \\\\', 
         '\hline',
-        #'\hline',
-        ' \% Correct & '+' & '.join(["%.2f"%(100.*e.accuracy) for e in evals])+' \\\\', 
-        #'\hline',
-        'AP & '+' & '.join(["%.3f"%e.ap for e in evals])+' \\\\', 
-        #'\hline',
-        'Avg. Rank & '+' & '.join(["%.3f"%e.avg_rank for e in evals])+' \\\\', 
-        #'\hline',
-        'AUH & '+' & '.join(["%.3f"%e.auh for e in evals])+' \\\\', 
+        ' \% Correct & '+print_with_max(accuracies)+' \\\\', 
+        'AP & '+print_with_max(aps)+' \\\\', 
+        'Avg. Rank & '+print_with_max(avg_ranks)+' \\\\', 
+        'AUH & '+print_with_max(auhs)+' \\\\', 
         '\hline',
         '\end{tabular}'])
       f.write(table)
-      f.write('\n\end{document}')
     if pdf:
+      pdf_tex_filename = tex_filename[:-4]+'_preview.tex'
+      with open(pdf_tex_filename,'w') as f:
+        f.write(self.preamble)
+        f.write('\input{%s}'%os.path.basename(tex_filename))
+        f.write('\n\end{document}')
+      pdf_filename = os.path.basename(pdf_tex_filename)[:-4]+'.pdf'
       cmds = [
           "cd %s"%self.table_location,
           "make %s"%pdf_filename,
           "mv %s %s1"%(pdf_filename,pdf_filename),
           "make clean",
           "mv %s1 %s"%(pdf_filename,pdf_filename)]
+      pprint(cmds)
       os.system(' && '.join(cmds))
 
+  def generate_subfig(self,features=None,pdf=True):
+    """
+    Outputs a .tex file containing a subfigure pulling together all the plots
+    for the given features.
+    Optionally, also generates a .pdf containing this with a minimal preamble.
+    """
+
 def main():
-  """Goes through different features, outputting their evaluations, as well as
-  a combined PR curve evaluation."""
+  """
+  Goes through different features, outputting their evaluations, as well as
+  a combined PR curve evaluation.
+  """
   eval_set = EvalSet()
+  eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
   # First, load the common model names
   model_name_location = "../writeups/model_names.txt"
@@ -173,9 +189,10 @@ def main():
   eval_set.table_location = "../writeups/results/"
   if not os.path.exists(eval_set.table_location):
     os.makedirs(eval_set.table_location)
+  eval_set.table_tex_filename_template = eval_set.table_location+'%s'+"_table.tex"
+
 
   # Parse the output log data for all the evaluations
-  eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
   eval_set.evals = {}
   for feature in eval_set.features:
     eval_set.evals[feature] = Evaluation(eval_set, feature)
@@ -188,6 +205,9 @@ def main():
   eval_set.print_comparison_table()
   #eval_set.plot_rank_histogram()
   #eval_set.plot_pr()
+
+  # Generate consolidation latex figure
+  eval_set.generate_subfig()
 
 if __name__ == '__main__':
   main()
