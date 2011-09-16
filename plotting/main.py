@@ -63,19 +63,27 @@ class EvalSet:
     width = 0.9
     ind = arange(len(evals))
 
+    clf()
+    fig, ((ax1, ax2)) = subplots(1, 2, figsize=(16,4), sharex=False, sharey=True)
+    subplots_adjust(bottom=0.19)
+    self.turn_off_up_right_axes(ax1)
+    self.turn_off_up_right_axes(ax2)
+    setp(ax2.get_yticklabels(), visible=False)
+    
+    axs = [ax1,ax2]
     data_sources = ['train_total','test_total']
-    for data_source in data_sources:
+    titles = ['Training','Testing']
+    for ax,data_source,ti in zip(axs,data_sources,titles):
       data = [e.time[data_source] for e in evals]
-      ax = self.prep_bar((8,4))
-      subplots_adjust(bottom=0.16)
-      barh(ind,data,color='black')
+      ax.barh(ind,data,color='black')
       for j,d in enumerate(data):
-        text(d+max(data)*0.01, j+0.4, "%.2f"%d)
-      
+        ax.text(d+max(data)*0.02, j+0.35, "%.2f"%d)
       yticks(ind+0.5,names,size=16)
-      xlabel('Time in seconds',size=16)
+      ax.set_xlabel('Time (sec)',size=16)
       ax.xaxis.grid(True)
-      self.savefig_wrap(features,data_source)
+      setp(ax.get_xticklabels(),rotation=30)
+      ax.set_title(ti)
+    self.savefig_wrap(features,'timing_overview')
 
   def plot_timing_stacked(self, features=None):
     evals,feat_names = self.process_features(features)
@@ -135,9 +143,9 @@ class EvalSet:
     
     axs = [ax1,ax2,ax3,ax4]
     data_sources = ['test_features','voting','alignment_inferred','ICP']
-    xlabels = ['Feature Description', 'Voting', 'Initial Alignment', 'ICP']
+    titles = ['Feature Description', 'Voting', 'Initial Alignment', 'ICP']
 
-    for ax,data_source,xlabel in zip(axs,data_sources,xlabels):
+    for ax,data_source,ti in zip(axs,data_sources,titles):
       times = [e.time[data_source] for e in evals]
       ax.barh(ind,times,color='black')
       for j,d in enumerate(times):
@@ -145,7 +153,7 @@ class EvalSet:
       ax.xaxis.grid(True)
       ax.set_xlabel('Time (sec)')
       setp(ax.get_xticklabels(),rotation=30)
-      ax.set_title(xlabel)
+      ax.set_title(ti)
       yticks(ind+0.5,names)
 
     self.savefig_wrap(features,'timing_test_panel')
@@ -322,12 +330,12 @@ def main():
   a combined PR curve evaluation.
   """
   do_plot = True 
-  #do_plot = False 
+  do_plot = False 
 
   # Set the basic things about this run
   # TODO: accept these from the command line
   e_set = EvalSet()
-  dataset = "PSB"
+  dataset = "WGDB"
   if dataset == "WGDB":
     e_set.dataset = "WGDB"
     e_set.dataset_full = "Willow Garage Grasping Dataset"
@@ -372,11 +380,12 @@ def main():
     e_set.plot_rank_histogram()
     e_set.plot_pr()
     e_set.plot_timing()
-  e_set.plot_timing_panel()
+    e_set.plot_timing_panel()
+  e_set.plot_timing()
 
   # Generate feature comparison table and latex figure
-  e_set.print_comparison_table()
-  e_set.generate_subfig()
+  #e_set.print_comparison_table()
+  #e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()
