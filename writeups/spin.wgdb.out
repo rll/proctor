@@ -1,0 +1,741 @@
+[models]
+............ finished model 0 (165)
+............ finished model 1 (31)
+............ finished model 2 (133)
+............ finished model 3 (111)
+............ finished model 4 (162)
+............ finished model 5 (58)
+............ finished model 6 (25)
+............ finished model 7 (21)
+[training]
+computing features on 4549 points
+finished model 0
+computing features on 2751 points
+finished model 1
+computing features on 1780 points
+finished model 2
+computing features on 624 points
+finished model 3
+computing features on 1796 points
+finished model 4
+computing features on 2291 points
+finished model 5
+computing features on 1251 points
+finished model 6
+computing features on 1244 points
+finished model 7
+[test 0]
+scanned model 2
+computing features on 521 points
+7: 3.49637e+10 / 82.0559
+1: 0 / 56.4991
+3: 0 / 297.147
+0: 0 / 41.3704
+detector guessed 0
+[test 1]
+scanned model 6
+computing features on 585 points
+7: 3.92587e+10 / 120.139
+1: 0 / 73.1755
+3: 0 / 448.246
+0: 0 / 234.433
+detector guessed 1
+[test 2]
+scanned model 5
+computing features on 1017 points
+7: 6.81155e+10 / 353.869
+4: 2.73081e+07 / 109.414
+5: 1.49868e+07 / 62.2307
+1: 0 / 190.531
+detector guessed 5
+[test 3]
+scanned model 2
+computing features on 559 points
+7: 3.75139e+10 / 1479.88
+1: 0 / 213.865
+3: 0 / 516.84
+0: 0 / 89.5388
+detector guessed 0
+[test 4]
+scanned model 7
+computing features on 791 points
+7: 5.30831e+10 / 0.173255
+1: 0 / 43.4321
+3: 0 / 1065.98
+0: 0 / 248.107
+detector guessed 7
+[test 5]
+scanned model 4
+computing features on 727 points
+7: 4.83184e+10 / 936.468
+5: 8.54617e+07 / 661.229
+4: 8.29598e+07 / 685.182
+3: 27627.7 / 887.383
+detector guessed 5
+[test 6]
+scanned model 3
+computing features on 305 points
+7: 2.04682e+10 / 50.0533
+1: 0 / 24.7531
+3: 0 / 111.108
+0: 0 / 32.7871
+detector guessed 1
+[test 7]
+scanned model 0
+computing features on 1652 points
+uh-oh, only found 0 matches.
+7: 1.10797e+11 / 4666.38
+1: 0 / 102.605
+3: 0 / 4563.07
+0: 0 / 477.337
+detector guessed 1
+[test 8]
+scanned model 5
+computing features on 847 points
+7: 5.63043e+10 / 165.355
+5: 2.51697e+08 / 77.8446
+4: 1.9801e+08 / 113.667
+1: 0 / 80.0512
+detector guessed 5
+[test 9]
+scanned model 1
+computing features on 1129 points
+7: 7.57659e+10 / 1527.24
+1: 0 / 1203.83
+3: 0 / 3414.16
+0: 0 / 1014.7
+detector guessed 0
+[test 10]
+scanned model 2
+computing features on 883 points
+7: 5.92571e+10 / 82.3659
+1: 0 / 91.8207
+3: 0 / 260.981
+0: 0 / 139.921
+detector guessed 7
+[test 11]
+scanned model 0
+computing features on 1227 points
+7: 8.23426e+10 / 989.395
+1: 0 / 417.615
+3: 0 / 2042.76
+0: 0 / 508.67
+detector guessed 1
+[test 12]
+scanned model 1
+computing features on 1024 points
+7: 6.87195e+10 / 980.289
+1: 0 / 224.491
+3: 0 / 2942.51
+0: 0 / 94.7113
+detector guessed 0
+[test 13]
+scanned model 2
+computing features on 1086 points
+7: 7.28802e+10 / 132.159
+1: 0 / 56.3414
+3: 0 / 332.877
+0: 0 / 121.143
+detector guessed 1
+[test 14]
+scanned model 7
+computing features on 575 points
+7: 3.85876e+10 / 30.0701
+1: 0 / 34.8399
+3: 0 / 180.528
+0: 0 / 124.537
+detector guessed 7
+[test 15]
+scanned model 6
+computing features on 567 points
+7: 3.80507e+10 / 78.3142
+1: 0 / 105.167
+3: 0 / 426.381
+0: 0 / 272.617
+detector guessed 7
+[test 16]
+scanned model 6
+computing features on 624 points
+7: 4.18759e+10 / 104.735
+1: 0 / 224.555
+3: 0 / 146.362
+0: 0 / 100.894
+detector guessed 0
+[test 17]
+scanned model 7
+computing features on 503 points
+7: 3.37558e+10 / 9.3386
+1: 0 / 39.3202
+3: 0 / 184.18
+0: 0 / 43.4251
+detector guessed 7
+[test 18]
+scanned model 5
+computing features on 1035 points
+7: 6.93906e+10 / 394.171
+4: 246938 / 133.262
+3: 195785 / 739.863
+5: 38918.2 / 72.3067
+detector guessed 5
+[test 19]
+scanned model 2
+computing features on 515 points
+7: 3.45611e+10 / 55.4777
+1: 0 / 264.242
+3: 0 / 186.67
+0: 0 / 73.3138
+detector guessed 7
+[test 20]
+scanned model 6
+computing features on 610 points
+7: 4.09364e+10 / 102.376
+1: 0 / 1429.72
+3: 0 / 555.094
+0: 0 / 279.57
+detector guessed 7
+[test 21]
+scanned model 7
+computing features on 980 points
+7: 6.57667e+10 / 54.1341
+1: 0 / 94.0082
+3: 0 / 395.89
+0: 0 / 173.815
+detector guessed 7
+[test 22]
+scanned model 7
+computing features on 545 points
+7: 3.65743e+10 / 78.4237
+1: 0 / 37.5217
+3: 0 / 93.3866
+0: 0 / 101.03
+detector guessed 1
+[test 23]
+scanned model 3
+computing features on 308 points
+7: 2.06695e+10 / 21.7754
+1: 0 / 29.3903
+3: 0 / 83.261
+0: 0 / 60.8599
+detector guessed 7
+[test 24]
+scanned model 6
+computing features on 592 points
+7: 3.97284e+10 / 116.795
+1: 0 / 82.6004
+3: 0 / 90.498
+0: 0 / 523.94
+detector guessed 1
+[test 25]
+scanned model 0
+computing features on 1931 points
+7: 1.29587e+11 / 2231.72
+1: 0 / 299.301
+3: 0 / 3629.94
+0: 0 / 224.407
+detector guessed 0
+[test 26]
+scanned model 2
+computing features on 556 points
+7: 3.73125e+10 / 506.112
+1: 0 / 158.3
+3: 0 / 462.106
+0: 0 / 129.366
+detector guessed 0
+[test 27]
+scanned model 1
+computing features on 1140 points
+7: 7.65041e+10 / 887.171
+1: 0 / 1485.32
+3: 0 / 3081.86
+0: 0 / 525.849
+detector guessed 0
+[test 28]
+scanned model 5
+computing features on 740 points
+7: 4.96606e+10 / 362.268
+1: 0 / 137.729
+3: 0 / 851.47
+0: 0 / 140.969
+detector guessed 1
+[test 29]
+scanned model 1
+computing features on 1080 points
+7: 7.24776e+10 / 692.905
+1: 0 / 245.848
+3: 0 / 790.481
+0: 0 / 154.501
+detector guessed 0
+[test 30]
+scanned model 7
+computing features on 931 points
+7: 6.24784e+10 / 47.8215
+1: 0 / 102.453
+3: 0 / 684.377
+0: 0 / 306.11
+detector guessed 7
+[test 31]
+scanned model 1
+computing features on 1233 points
+7: 8.27452e+10 / 899.931
+1: 0 / 111.075
+3: 0 / 1363.63
+0: 0 / 1137.8
+detector guessed 1
+[test 32]
+scanned model 7
+computing features on 502 points
+7: 3.36886e+10 / 0.684103
+1: 0 / 13.9419
+3: 0 / 131.533
+0: 0 / 79.5972
+detector guessed 7
+[test 33]
+scanned model 4
+computing features on 460 points
+7: 3.08701e+10 / 165.221
+1: 0 / 725.262
+3: 0 / 435.155
+0: 0 / 659.149
+detector guessed 7
+[test 34]
+scanned model 4
+computing features on 660 points
+7: 4.42919e+10 / 1304.97
+1: 0 / 2018.01
+3: 0 / 2540.48
+0: 0 / 734.815
+detector guessed 0
+[test 35]
+scanned model 6
+computing features on 628 points
+7: 4.21444e+10 / 114.133
+1: 0 / 94.993
+3: 0 / 259.995
+0: 0 / 180.189
+detector guessed 1
+[test 36]
+scanned model 5
+computing features on 1081 points
+7: 7.25447e+10 / 179.979
+1: 0 / 205.506
+3: 0 / 826.137
+0: 0 / 240.88
+detector guessed 7
+[test 37]
+scanned model 5
+computing features on 992 points
+7: 6.6572e+10 / 159.879
+1: 0 / 125.382
+3: 0 / 761.391
+0: 0 / 268.725
+detector guessed 1
+[test 38]
+scanned model 6
+computing features on 542 points
+7: 3.6373e+10 / 247.763
+1: 0 / 65.986
+3: 0 / 47.5061
+0: 0 / 1143.79
+detector guessed 3
+[test 39]
+scanned model 6
+computing features on 604 points
+7: 4.05338e+10 / 76.6147
+1: 0 / 143.878
+3: 0 / 487.873
+0: 0 / 154.741
+detector guessed 7
+[test 40]
+scanned model 6
+computing features on 334 points
+7: 2.24144e+10 / 32.3688
+1: 0 / 43.8342
+3: 0 / 305.82
+0: 0 / 56.5125
+detector guessed 7
+[test 41]
+scanned model 7
+computing features on 973 points
+7: 6.52969e+10 / 28.209
+1: 0 / 85.4796
+3: 0 / 332.996
+0: 0 / 338.304
+detector guessed 7
+[test 42]
+scanned model 3
+computing features on 305 points
+7: 2.04682e+10 / 39.684
+1: 0 / 30.7299
+3: 0 / 92.3149
+0: 0 / 41.2372
+detector guessed 1
+[test 43]
+scanned model 2
+computing features on 557 points
+7: 3.73796e+10 / 293.287
+1: 0 / 240.414
+3: 0 / 474.051
+0: 0 / 46.6518
+detector guessed 0
+[test 44]
+scanned model 7
+computing features on 578 points
+7: 3.87889e+10 / 27.89
+1: 0 / 100.359
+3: 0 / 254.495
+0: 0 / 211.806
+detector guessed 7
+[test 45]
+scanned model 1
+computing features on 1144 points
+7: 7.67725e+10 / 1705.48
+1: 0 / 166.499
+3: 0 / 699.273
+0: 0 / 117.228
+detector guessed 0
+[test 46]
+scanned model 6
+computing features on 483 points
+7: 3.24136e+10 / 95.6956
+1: 0 / 44.6117
+3: 0 / 201.209
+0: 0 / 163.873
+detector guessed 1
+[test 47]
+scanned model 4
+computing features on 703 points
+7: 4.69388e+10 / 980.437
+4: 4.66868e+07 / 675.249
+0: 1.40059e+07 / 172.578
+3: 5.22313e+06 / 1268.06
+detector guessed 0
+[test 48]
+scanned model 4
+computing features on 762 points
+7: 5.1137e+10 / 2468.63
+1: 0 / 1753.76
+3: 0 / 4203.34
+0: 0 / 135.827
+detector guessed 0
+[test 49]
+scanned model 2
+computing features on 792 points
+7: 5.31502e+10 / 79.9137
+1: 0 / 134.553
+3: 0 / 303.949
+0: 0 / 163.625
+detector guessed 7
+[test 50]
+scanned model 0
+computing features on 1474 points
+7: 9.89185e+10 / 950.813
+1: 0 / 218.191
+3: 0 / 1958.03
+0: 0 / 475.185
+detector guessed 1
+[test 51]
+scanned model 5
+computing features on 953 points
+7: 6.38876e+10 / 585.803
+5: 4.95521e+07 / 148.466
+4: 1.67005e+07 / 126.684
+1: 0 / 130.703
+detector guessed 4
+[test 52]
+scanned model 0
+computing features on 1770 points
+7: 1.18783e+11 / 2497.92
+1: 0 / 999.393
+3: 0 / 3895.28
+0: 0 / 609.055
+detector guessed 0
+[test 53]
+scanned model 7
+computing features on 467 points
+7: 3.13398e+10 / 19.356
+1: 0 / 37.1312
+3: 0 / 137.613
+0: 0 / 49.5165
+detector guessed 7
+[test 54]
+scanned model 5
+computing features on 1025 points
+7: 6.87866e+10 / 738.529
+1: 0 / 124.057
+3: 0 / 654.318
+0: 0 / 210.789
+detector guessed 1
+[test 55]
+scanned model 1
+computing features on 1200 points
+7: 8.05306e+10 / 1414.83
+1: 0 / 511.896
+3: 0 / 1965.05
+0: 0 / 76.6411
+detector guessed 0
+[test 56]
+scanned model 3
+computing features on 296 points
+7: 1.98642e+10 / 38.456
+1: 0 / 34.9909
+3: 0 / 45.2228
+0: 0 / 121.753
+detector guessed 1
+[test 57]
+scanned model 4
+computing features on 612 points
+7: 4.10706e+10 / 4216.52
+1: 0 / 739.32
+3: 0 / 2222.99
+0: 0 / 126.238
+detector guessed 0
+[test 58]
+scanned model 7
+computing features on 601 points
+7: 4.03324e+10 / 36.9013
+1: 0 / 76.4865
+3: 0 / 637.753
+0: 0 / 240.767
+detector guessed 7
+[test 59]
+scanned model 0
+computing features on 1414 points
+uh-oh, only found 0 matches.
+uh-oh, only found 0 matches.
+7: 9.47577e+10 / 901.258
+1: 0 / 952.028
+3: 0 / 2681.99
+0: 0 / 4402.49
+detector guessed 7
+[test 60]
+scanned model 0
+computing features on 1824 points
+7: 1.22407e+11 / 2028.99
+1: 0 / 437.196
+3: 0 / 2498.35
+0: 0 / 2026.42
+detector guessed 1
+[test 61]
+scanned model 7
+computing features on 909 points
+7: 6.1002e+10 / 33.3956
+1: 0 / 38.5235
+3: 0 / 733.656
+0: 0 / 271.456
+detector guessed 7
+[test 62]
+scanned model 6
+computing features on 599 points
+7: 4.01982e+10 / 121.31
+1: 0 / 349.541
+3: 0 / 230.523
+0: 0 / 100.917
+detector guessed 0
+[test 63]
+scanned model 4
+computing features on 631 points
+7: 4.23457e+10 / 3051.57
+1: 0 / 590.342
+3: 0 / 2211.1
+0: 0 / 147.486
+detector guessed 0
+[test 64]
+scanned model 6
+computing features on 603 points
+7: 4.04666e+10 / 159.636
+1: 0 / 164.799
+3: 0 / 324.724
+0: 0 / 104.38
+detector guessed 0
+[test 65]
+scanned model 7
+computing features on 980 points
+7: 6.57667e+10 / 26.5616
+1: 0 / 77.9856
+3: 0 / 455.789
+0: 0 / 332.273
+detector guessed 7
+[test 66]
+scanned model 7
+computing features on 972 points
+7: 6.52298e+10 / 39.7111
+1: 0 / 56.8706
+3: 0 / 647.404
+0: 0 / 237.42
+detector guessed 7
+[test 67]
+scanned model 1
+computing features on 1276 points
+7: 8.56309e+10 / 1702.18
+1: 0 / 449.646
+3: 0 / 1109.52
+0: 0 / 122.832
+detector guessed 0
+[test 68]
+scanned model 4
+computing features on 431 points
+7: 2.89239e+10 / 119.733
+1: 0 / 17.3476
+3: 0 / 62.9416
+0: 0 / 92.9758
+detector guessed 1
+[test 69]
+scanned model 5
+computing features on 1126 points
+7: 7.55646e+10 / 191.076
+1: 0 / 153.566
+3: 0 / 707.291
+0: 0 / 142.622
+detector guessed 0
+[test 70]
+scanned model 3
+computing features on 276 points
+7: 1.8522e+10 / 33.3987
+1: 0 / 106.445
+3: 0 / 6.37154
+0: 0 / 44.182
+detector guessed 3
+[test 71]
+scanned model 4
+computing features on 870 points
+7: 5.83847e+10 / 1465.62
+1: 0 / 88.8057
+3: 0 / 1586.57
+0: 0 / 676.797
+detector guessed 1
+[test 72]
+scanned model 7
+computing features on 624 points
+7: 4.18759e+10 / 74.6808
+1: 0 / 55.4483
+3: 0 / 126.186
+0: 0 / 133.953
+detector guessed 1
+[test 73]
+scanned model 0
+computing features on 1760 points
+7: 1.18112e+11 / 1813.77
+1: 0 / 222.177
+3: 0 / 4569.74
+0: 0 / 374.918
+detector guessed 1
+[test 74]
+scanned model 1
+computing features on 1261 points
+7: 8.46243e+10 / 940.408
+1: 0 / 211.043
+3: 0 / 1824.89
+0: 0 / 460.164
+detector guessed 1
+[test 75]
+scanned model 0
+computing features on 1925 points
+7: 1.29185e+11 / 3137.28
+1: 0 / 203.945
+3: 0 / 2692.62
+0: 0 / 110.698
+detector guessed 0
+[test 76]
+scanned model 6
+computing features on 545 points
+7: 3.65743e+10 / 178.328
+1: 0 / 233.07
+3: 0 / 344.692
+0: 0 / 68.3578
+detector guessed 0
+[test 77]
+scanned model 2
+computing features on 565 points
+7: 3.79165e+10 / 657.396
+1: 0 / 129.837
+3: 0 / 1207.43
+0: 0 / 73.9901
+detector guessed 0
+[test 78]
+scanned model 0
+computing features on 1919 points
+7: 1.28782e+11 / 2828.35
+1: 0 / 291.886
+3: 0 / 4265.8
+0: 0 / 323.816
+detector guessed 1
+[test 79]
+scanned model 4
+computing features on 777 points
+7: 5.21436e+10 / 927.002
+1: 0 / 440.383
+3: 0 / 981.847
+0: 0 / 335.54
+detector guessed 0
+[overview]
+22 of 80 correct (27.50%)
+[precision-recall]
+1.000000 0.012500 0.173255
+1.000000 0.025000 0.684103
+1.000000 0.037500 6.37154
+1.000000 0.050000 9.3386
+0.714286 0.062500 19.356
+0.600000 0.075000 26.5616
+0.636364 0.087500 27.89
+0.666667 0.100000 28.209
+0.642857 0.112500 30.0701
+0.555556 0.125000 33.3956
+0.500000 0.137500 36.9013
+0.413793 0.150000 39.7111
+0.351351 0.162500 45.2228
+0.350000 0.175000 47.8215
+0.348837 0.187500 54.1341
+0.313725 0.200000 62.2307
+0.309091 0.212500 72.3067
+0.305085 0.225000 74.6808
+0.301587 0.237500 77.8446
+0.303030 0.250000 78.4237
+0.287671 0.262500 83.261
+0.278481 0.275000 92.3149
+0.234694 0.287500 110.698
+0.242424 0.300000 111.075
+0.250000 0.312500 111.108
+0.194030 0.325000 148.466
+0.184932 0.337500 166.499
+0.173913 0.350000 211.043
+0.174699 0.362500 224.407
+0.179641 0.375000 224.491
+0.176136 0.387500 245.848
+0.164948 0.400000 323.816
+0.160976 0.412500 374.918
+0.158879 0.425000 449.646
+0.159817 0.437500 475.185
+0.163636 0.450000 477.337
+0.165919 0.462500 508.67
+0.169643 0.475000 511.896
+0.168831 0.487500 609.055
+0.168067 0.500000 675.249
+0.170124 0.512500 685.182
+0.153285 0.525000 1203.83
+0.151943 0.537500 1485.32
+0.149660 0.550000 2026.42
+0.141956 0.562500 4402.49
+[classifier stats]
+average vote rank of correct model:                    1.86
+area under cumulative histogram of correct model rank: 571
+[confusion matrix]
+   3   6   0   0   0   0   0   1
+   7   2   0   0   0   0   0   0
+   5   1   0   0   0   0   0   3
+   0   3   0   1   0   0   0   1
+   6   2   0   0   0   1   0   1
+   1   3   0   0   1   3   0   1
+   4   4   0   1   0   0   0   4
+   0   2   0   0   0   0   0  13
+[timing]
+obtain training clouds:      0.370 sec
+obtain testing clouds:      99.060 sec
+detector training:          27.900 sec
+detector testing:        77342.220 sec
+[detector timing]
+obtain training features:     26.530 sec
+build feature tree:            0.030 sec
+compute testing features:     19.190 sec
+voting classifier:            50.250 sec
+initial alignment:         21484.960 sec
+ICP:                       55737.460 sec
