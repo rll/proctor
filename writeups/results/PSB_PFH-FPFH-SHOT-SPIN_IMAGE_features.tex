@@ -1,28 +1,13 @@
-\begin{figure*}[h]
-\centering
-  \subfloat[][]{
-  \begin{tabular}{ | l || c | c | c | c | }
-\hline
-Metric & PFH & FPFH & SHOT & Spin \\
-\hline
- \% Correct & 86.25 & \bf 87.50 & 73.75 & 49.35 \\
-AP & 0.85 & \bf 0.86 & 0.64 & 0.31 \\
-Avg. Rank & 2.25 & \bf 2.16 & 2.30 & 3.96 \\
-AUH & 0.84 & \bf 0.85 & 0.84 & 0.65 \\
-\hline
-\end{tabular}
-  } \\
-  \subfloat[][]{
-\includegraphics[width=0.6\linewidth]{../figures/PSB/PFH-FPFH-SHOT-SPIN_IMAGE_pr.png}
-} \\
-  \subfloat[][]{
-    \begin{tabular}{m{0.08\textwidth} m{0.35\textwidth} m{0.35\textwidth}}
-    & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
-      PFH & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/PFH_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/PFH_rankhist.png} \\
-      FPFH & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/FPFH_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/FPFH_rankhist.png} \\
-      SHOT & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SHOT_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SHOT_rankhist.png} \\
-      Spin Image & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SPIN_IMAGE_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SPIN_IMAGE_rankhist.png} \\
-    \end{tabular}
-  }
-\end{figure*}
 
+\begin{table*}
+\centering
+\begin{tabular}{m{0.08\textwidth} m{0.35\textwidth} m{0.35\textwidth}}
+  & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
+  PFH & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/PFH_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/PFH_rankhist.png} \\
+  FPFH & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/FPFH_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/FPFH_rankhist.png} \\
+  SHOT & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SHOT_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SHOT_rankhist.png} \\
+  Spin & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SPIN_IMAGE_confmat.png} & \includegraphics[width=0.35\textwidth,clip=true]{../figures/PSB/SPIN_IMAGE_rankhist.png} \\
+\end{tabular}
+\caption{A table arranging images}
+\label{tab:gt}
+\end{table*}

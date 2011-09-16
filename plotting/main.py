@@ -63,12 +63,21 @@ class EvalSet:
     width = 0.9
     ind = arange(len(evals))
 
-    clf()
-    fig = gcf() 
-    fig.set_size_inches( 16 , 6 )
-    fig.set_dpi(70)
-    ax1 = fig.add_subplot('111')
-    self.turn_off_up_right_axes(ax1)
+    data_sources = ['train_total','test_total']
+    for data_source in data_sources:
+      data = [e.time[data_source] for e in evals]
+      ax = self.prep_bar()
+      barh(ind,data,color='black')
+      for j,d in enumerate(data):
+        text(d+max(data)*0.01, j+0.4, "%.2f"%d)
+      
+      yticks(ind+0.5,names,size=16)
+      xlabel('Time in seconds',size=16)
+      ax.xaxis.grid(True)
+      self.savefig_wrap(features,data_source)
+
+    self.prep_bar((8,4))
+
       
     feat_times = [e.time['test_features'] for e in evals]
     print(feat_times)
@@ -90,6 +99,15 @@ class EvalSet:
     xlabel('Time in seconds')
     legend(loc='lower right')
     self.savefig_wrap(features,'timing_test')
+
+  def prep_bar(self,size=None):
+    fig = figure(1)
+    fig.clf()
+    if size:
+      fig.set_size_inches(size)
+    ax = fig.add_subplot('111')
+    self.turn_off_up_right_axes(ax)
+    return ax
 
   def plot_timing_panel(self, features=None):
     evals,feat_names = self.process_features(features)
@@ -247,6 +265,8 @@ class EvalSet:
     for the given features.
     Optionally, also generates a .pdf containing this with a minimal preamble.
     """
+    # TODO: make sure this matches the dashboard that's in the paper. Right now
+    # it does not.
     evals,feat_names = self.process_features(features)
     col_widths = (0.08, 0.35, 0.35)
     subfig = r"""
@@ -345,11 +365,11 @@ def main():
   if do_plot:
     e_set.plot_rank_histogram()
     e_set.plot_pr()
-    e_set.plot_timing()
+  e_set.plot_timing()
 
   # Generate feature comparison table and latex figure
   #e_set.print_comparison_table()
-  e_set.generate_subfig()
+  #e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()
