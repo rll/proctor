@@ -11,7 +11,10 @@ class Evaluation:
   def __init__(self, eval_set, feature):
     log_filename = eval_set.log_location_template%feature 
     self.feature = feature
-    self.nice_name = feature.replace('_',' ')
+    self.nice_name = self.feature.replace('_',' ')
+    # NOTE: special case
+    if self.feature=='SPIN_IMAGE':
+      self.nice_name = 'Spin Image'
 
     with open(log_filename) as log:
       lines = log.readlines()

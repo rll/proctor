@@ -12,14 +12,21 @@ from pylab import *
 from evaluation import Evaluation
 
 class EvalSet:
-  preamble="""\documentclass[10pt]{article}
+  preamble=r"""
+\documentclass[10pt]{article}
 \usepackage[usenames]{color} %used for font color
 \usepackage{amssymb} %maths
 \usepackage{amsmath} %maths
 \usepackage[utf8]{inputenc} %useful to type directly diacritic characters
 \usepackage{multirow}
+
+\usepackage{color}
+\usepackage{graphicx}
 \usepackage{subfig}
-\\begin{document}
+\usepackage{array}
+\usepackage{url}
+
+\begin{document}
 
 """  
 
@@ -145,6 +152,32 @@ class EvalSet:
     if pdf:
       self.preview_pdf(tex_filename)
 
+  def generate_subfig(self,features=None,pdf=True):
+    """
+    Outputs a .tex file containing a subfigure pulling together all the plots
+    for the given features.
+    Optionally, also generates a .pdf containing this with a minimal preamble.
+    """
+    evals,feat_names = self.process_features(features)
+    subfig = r"""
+\begin{table*}
+\centering
+\begin{tabular}{m{0.08\textwidth} m{0.45\textwidth} m{0.45\textwidth}}
+  & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
+"""
+    subfig += '\n'.join([
+r'  %s & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/%s_rankhist.png} \\'%(e.nice_name,e.feature,e.feature) for e in evals])
+    subfig += r"""
+\end{tabular}
+\caption{A table arranging images}
+\label{tab:gt}
+\end{table*}"""
+    tex_filename = self.features_tex_filename_template%feat_names
+    with open(tex_filename,'w') as f:
+      f.write(subfig)
+    if pdf:
+      self.preview_pdf(tex_filename)
+
   def preview_pdf(self,tex_filename):
     pdf_tex_filename = tex_filename[:-4]+'_preview.tex'
     with open(pdf_tex_filename,'w') as f:
@@ -159,15 +192,6 @@ class EvalSet:
         "make clean",
         "mv %s1 %s"%(pdf_filename,pdf_filename)]
     os.system(' && '.join(cmds))
-
-  def generate_subfig(self,features=None,pdf=True):
-    """
-    Outputs a .tex file containing a subfigure pulling together all the plots
-    for the given features.
-    Optionally, also generates a .pdf containing this with a minimal preamble.
-    """
-    evals,feat_names = self.process_features(features)
-
 
   def process_features(self,features=None):
     """
@@ -186,6 +210,7 @@ def main():
   Goes through different features, outputting their evaluations, as well as
   a combined PR curve evaluation.
   """
+  do_plot = False
   eval_set = EvalSet()
   eval_set.features = ['PFH','FPFH','SHOT','SPIN_IMAGE']
 
@@ -204,6 +229,7 @@ def main():
   if not os.path.exists(eval_set.table_location):
     os.makedirs(eval_set.table_location)
   eval_set.table_tex_filename_template = eval_set.table_location+'%s'+"_table.tex"
+  eval_set.features_tex_filename_template = eval_set.table_location+'%s'+"_features.tex"
 
 
   # Parse the output log data for all the evaluations
@@ -211,14 +237,16 @@ def main():
   for feature in eval_set.features:
     eval_set.evals[feature] = Evaluation(eval_set, feature)
     eval_set.print_info(feature)
-    eval_set.plot_confusion_matrix(feature)
-    eval_set.plot_rank_histogram([feature])
-    eval_set.plot_pr([feature])
+    if do_plot:
+      eval_set.plot_confusion_matrix(feature)
+      eval_set.plot_rank_histogram([feature])
+      eval_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
-  eval_set.print_comparison_table()
-  eval_set.plot_rank_histogram()
-  eval_set.plot_pr()
+  #eval_set.print_comparison_table()
+  if do_plot:
+    eval_set.plot_rank_histogram()
+    eval_set.plot_pr()
 
   # Generate consolidation latex figure
   eval_set.generate_subfig()
