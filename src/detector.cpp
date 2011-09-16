@@ -88,8 +88,9 @@ void Detector::train(PointCloud<PointNormal>::Ptr *models) {
   for (int mi = 0; mi < Config::num_models; mi++) {
     Entry &e = database[mi];
     e.cloud = models[mi];
-    // TODO: replace this with UniformSampling
+    timer.start();
     e.indices = computeKeypoints(e.cloud);
+    timer.stop(KEYPOINTS_TRAINING);
     timer.start();
     e.features = obtainFeatures(mi, e.cloud, e.indices);
     timer.stop(OBTAIN_FEATURES_TRAINING);
@@ -114,7 +115,9 @@ bool operator<(const Candidate &a, const Candidate &b) {
 int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, double *registration) {
   Entry e;
   e.cloud = scene;
+  timer.start();
   e.indices = computeKeypoints(e.cloud);
+  timer.stop(KEYPOINTS_TESTING);
   timer.start();
   e.features = computeFeatures(e.cloud, e.indices);
   timer.stop(COMPUTE_FEATURES_TESTING);
@@ -135,7 +138,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
         index -= database[mi].indices->size();
       }
       // TODO: is this appropriate weighting?
-      classifier[mi] += 1. / distances[ri];
+      classifier[mi] += 1. / (distances[ri] + numeric_limits<float>::epsilon());
     }
   }
   // get top candidates
@@ -144,7 +147,7 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
     ballot[mi].mi = mi;
     ballot[mi].votes = classifier[mi];
   }
-  partial_sort(ballot.begin(), ballot.begin() + num_registration, ballot.end());
+  sort(ballot.begin(), ballot.end());
   timer.stop(VOTING_CLASSIFIER);
   if (vis.get()) {
     for (int ci = 0; ci < num_registration; ci++) {
@@ -164,6 +167,9 @@ int Detector::query(PointCloud<PointNormal>::Ptr scene, float *classifier, doubl
       guess = mi;
       best = registration[mi];
     }
+  }
+  for (int ci = num_registration; ci < Config::num_models; ci++) {
+    cout << ballot[ci].mi << ": " << ballot[ci].votes << endl;
   }
   return guess;
 }
@@ -259,7 +265,6 @@ double Detector::computeRegistration(Entry &source, int mi, int ci) {
     ia_ransac_sub.registerVisualizationCallback(updater);
   }
   ia_ransac_sub.align(*aligned);
-  if (ia_ransac_sub.getFitnessScore() > 0.006) return ia_ransac_sub.getFitnessScore();
   timer.stop(IA_RANSAC);
 
   timer.start();
