@@ -26,6 +26,7 @@
 \usepackage{graphicx}
 \usepackage{subfig}
 \usepackage{array}
+\usepackage{url}
 
 \newcommand{\note}[1]{\textcolor{red}{\textbf{#1}}}
 
@@ -67,15 +68,35 @@ Proctor: Evaluating 3-D Recognition
 
 \begin{abstract}
 
-Recently proliferation of cheap 3-D sensors.
-Lots of work on feature representations.
-But no unified evaluation available.
-We present an evaluation framework for point cloud-based recognition.
-Flexible as to dataset and feature.
-Modular design.
-Provides several metrics.
-Open source.
-We hope that this becomes a standard evaluation for future featurizations for 3-D recognition tasks.
+
+Until recently, the field of 3D perception was a niche domain. With the advent
+of inexpensive and accurate 3D imaging sensors, there has been an explosion of
+interest in 3D point clouds across a broad range of researchers and application
+developers. In the past few years, various research fields have developed
+many different feature representations that operate in 3D geometry spaces, but
+no unified evaluation has ever been performed due to a poor intersection between
+these burgeoning communities.
+
+In this paper we present a comprehensive evaluation framework for 3D point
+cloud-based recognition: Proctor. Our design is modular and we make no
+restrictions with respect to the type of features or datasets that we can
+operate on. The framework is designed to automatically test large ranges of
+parameters and estimate several metrics that can be automatically included in
+future publications. To encourange its use, we release the entire Proctor
+infrastructure under a permissive BSD license, linked to the Point Cloud
+Library (PCL) project~\cite{PCL}.
+
+%Recently proliferation of cheap 3-D sensors.
+%Lots of work on feature representations.
+%But no unified evaluation available.
+%We present an evaluation framework for point cloud-based recognition.
+%Flexible as to dataset and feature.
+%Modular design.
+%Provides several metrics.
+%Open source.
+
+We hope that this becomes a standard evaluation for future featurizations for
+3-D recognition tasks.
 
 \end{abstract}
 
@@ -87,10 +108,17 @@ We hope that this becomes a standard evaluation for future featurizations for 3-
 
 \section{COMMUNITY AND FUTURE PLANS}
 
-This paper describes the motivation for a standard 3-D recognition pipeline evaluation framework and explains our choices for the particular components of our implementation.
-We hope that future work in 3-D feature detection, description, or subsequent recognition or pose estimation mechanisms will base itself on this framework.
-The project of a general, modular 3-D preception evaluation framework is tremendous, and would benefit from code and testing contributions as much as its existence benefits researchers in these areas.
-Therefore we have provided all code and documentation open-source, and welcome contributions at \note{nice url here}.
+This paper describes the motivation for a standard 3-D recognition pipeline
+evaluation framework and explains our choices for the particular components of
+our implementation.
+
+We hope that future work in 3-D feature detection, description, or subsequent
+recognition or pose estimation mechanisms will base itself on this framework.
+The project of a general, modular 3-D preception evaluation framework is
+tremendous, and would benefit from code and testing contributions as much as its
+existence benefits researchers in these areas.
+Therefore we have provided all code and documentation open-source, and welcome
+contributions at \url{http://www.pointclouds.org/proctor}.
 
 \note{more about next steps?}
 
