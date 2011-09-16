@@ -23,7 +23,7 @@ Finally, it attempts to register the query scene with the likely candidates. Thi
 A custom detector must follow an interface with methods that take training data and test queries.
 For training, the detector receives the full point cloud of each model.
 For testing, the detector receives a range scan of some model, at some angle. It must output an estimated similarity for each candidate model, a more precise estimated distance to some candidate models, and a best guess of which model was scanned.
-In particular, we intend that detection systems that fit the description in the previous paragraph populate the similarities with classifier scores and populate the precise distances with euclidean distances after registration.
+In particular, we intend that detection systems that fit the description in the previous paragraph populate the similarities with classifier scores and populate the precise distances with Euclidean distances after registration.
 Ultimately, the Detector class is intended to be something that algorithm authors shall edit.
 
 \subsubsection{Primary Stock Detector}
@@ -49,7 +49,7 @@ The registered distance from the four top canidates are returned as the estimate
 Finally, the model that registers most closely with the scene is selected as the detected model.
 
 \subsubsection{Stock Variants}
-The other detectors that we are publishing are variants that replace FPFH with other local features supported by PCL. There are branches using PFH~\cite{pfh1, pfh2}, spin images~\cite{SpinImages}, and SHOT~\cite{shot}.
+Other detectors already in place are variants that replace FPFH with other local features supported by PCL. There are branches using PFH~\cite{pfh1, pfh2}, spin images~\cite{SpinImages}, and SHOT~\cite{shot}.
 The classification and registration mechanisms remain the same.
 
 \subsection{Proctor}

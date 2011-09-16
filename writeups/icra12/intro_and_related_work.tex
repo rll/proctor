@@ -15,7 +15,7 @@ We hope to foster easier sharing of ideas and methods through a common evaluatio
 In this paper, we present an open-source framework for comparing different 3-D features in the model matching evaluation regime.
 We explain the motivations behind our system and describe its modular architecture, with the aim of encouraging a community of users and contributors.
 In robotics, the Willow Garage PR2 has facilitated rapid progress in personal robotics research due to standardization and abstraction of the hardware interface.
-In computer vision, standard datasets and evaluation tasks such as the Caltech-101 \cite{FeiFei2007a} and the PASCAL Visual Object Challenge \cite{pascal-voc-2010} have focused research by giving groups a clear metric, and resulted in rapid logistic-curve improvement in object classification and detection.
+In computer vision, standard datasets and evaluation tasks such as the Caltech-101 \cite{FeiFei2007a} and the PASCAL Visual Object Challenge \cite{pascal-voc-2010} have focused research by giving groups a clear metric, and resulted in rapid improvement in object classification and detection.
 
 Our system, Proctor, aims for the same kind of impact in 3-D features, and classification and pose estimation methods research.
 
@@ -26,7 +26,7 @@ Given a database and a view, our task may be to:
 \begin{itemize}
 \item identify the object in the view (recognition),
 \item identify the object and its pose in the view (pose estimation),
-\item localize an object in the view and identify it (detection)
+\item localize an object in the view and identify it (detection).
 \end{itemize}
 
 The view provided can be clean or cluttered.
@@ -39,7 +39,14 @@ In the latter cases, the models may contains noise which may or may not be of th
 
 A common approach to all of these tasks, under many of the view and dataset conditions, is to extract local features from the 3-D data, which can then be matched to models in a database.
 Matching features ``vote'' for a particular model, and subsequent algorithms can evaluate the alignment of the hypothesis model to the sensor data.
-Although we choose to focus on this paradigm, it is but one of many approaches to 3-D shape retrieval \cite{Tangelder2004}. We discuss a list of 3D descriptors and various different datasets in the following subsections.
+
+Although for launching the Proctor framework we choose to focus on
+this paradigm, it is but one of many approaches to 3-D shape retrieval~\cite{Tangelder2004},
+and the intent of this line of open-source work is to provide a
+framework to which the community can easily contribute any 3-D shape
+retrieval algorithms of interest.
+
+We discuss a list of 3D descriptors and various different datasets in the following subsections.
 
 \subsection{Features}
 For 3-D object detection, a feature tries to capture something about the shape of a model or a part of a model.
@@ -58,7 +65,7 @@ An idea related to the spin image is the 3-D shape context descriptor \cite{From
 The method is to center a radially-binned sphere around a point on the surface of the 3-D data, and construct a histogram of points that fall within the bins.
 The bins are weighted by distance to the center, and the bins are spaced logarithmically along the radial dimension to increase robustness to noise and clutter.
 
-Signature of Histograms of OrienTations \cite{shot} also bins points into voxels arranged around a point, but instead of contributing only mass, it keeps track of the points' orientations as well.
+Signature of Histograms of OrienTations (SHOT)~\cite{shot} also bins points into voxels arranged around a point, but instead of contributing only mass, it keeps track of the points' orientations as well.
 Thus each voxel bin is not just a number, but a histogram of its own.
 
 Point Feature Histograms \cite{pfh1} attempt to describe a region by representing the relationships between surface normals of a k-neighborhood of the center point of the region.

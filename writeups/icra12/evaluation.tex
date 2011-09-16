@@ -1,7 +1,7 @@
 %!TEX root=./report.tex
 \section{EVALUATION}
 
-As a reminder, our task is identifying the correct object model from a large database, given a scan of a model in an uncluttered scene.
+As a reminder, we have currently seeded the Proctor framework with the task of identifying the correct object model from a database, given a scan of a model in an uncluttered scene.
 The detector should output one answer to this problem, although we also evaluate the process by which it arrives at the final answer.
 In our evaluations, we care about both accuracy and speed of the detector.
 
@@ -55,8 +55,10 @@ We evaluate the correctness of our results via the following scalar values
 
 These scalar metrics, in table form, form one part of our Accuracy Dashboard, seen in~\autoref{fig:PSB_dashboard} for the Princeton Shape Benchmark.
 The idea of the Dashboard is that each run of Proctor generates this complete set of results, all available in one place.
-Proctor outputs all figures and data for the dashboard, and generates an HTML page or a PDF document tying them together.
-In fact, ~\autoref{fig:PSB_dashboard} is an example of such an automatically-generated document---we simply inserted it into this paper's source.
+Proctor outputs all figures and data for the dashboard, and generates an HTML page and a PDF document tying them together.
+In fact, Figures \ref{fig:PSB_dashboard} and \ref{fig:WGDB_dashboard} are examples of such
+automatically generated documents---we simply inserted it into this
+paper's source.
 
 In addition to the scalar metrics, which are useful for a summary comparison of different features or algorithms, the Dashboard provides visualization of three things:
 \begin{itemize}
