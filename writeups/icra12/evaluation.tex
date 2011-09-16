@@ -13,23 +13,13 @@ We evaluate the correctness of our results with the following metrics:
   \item Area under the cumulative result-within-top-K histogram
 \end{itemize}
 
-%The results for the Princeton Shape Benchmark can be seen in~\autoref{tab:psb_results}
-%%\input{../results/PFH-FPFH-SHOT-SPIN_IMAGE_table.tex}
-%\begin{table}
-%\begin{center}
-%\begin{tabular}{ | l || l | l | l | l | }
-%\hline
-%Metric & PFH & FPFH & SHOT & SPIN IMAGE \\
-%\hline
-% \% Correct & 86.25 & 87.50 & 73.75 & 49.35 \\
-%AP & 0.850 & 0.855 & 0.635 & 0.307 \\
-%Avg. Rank & 2.250 & 2.160 & 2.300 & 3.960 \\
-%AUH & 0.844 & 0.855 & 0.838 & 0.654 \\
-%\hline
-%\end{tabular}
-%\end{center}
-%\label{tab:psb_results}
-%\end{table}
+The results for the Princeton Shape Benchmark can be seen in~\ref{tab:psb_results}
+\begin{table}
+  \centering
+  \input{../results/PFH-FPFH-SHOT-SPIN_IMAGE_table.tex}
+  \caption{Results on the Princeton Shape Benchmark.}
+  \label{tab:psb_results}
+\end{table}
 
 An additional important evaluation is the runtime performance of different methods.
 This data allows focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
