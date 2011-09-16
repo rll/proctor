@@ -7,6 +7,8 @@ Since the dataset contains polygonal representations, the framework uses simulat
 
 Our evaluation framework has two major parts. First is the Detector class, which houses the detection logic. Second is the Proctor class, which generates tests and reports.
 
+\fbox{include an architectural graph / oodraw/inkscape/etc here}
+
 \subsection{Detector}
 In designing this class, we tried to accommodate a common strategy in detection systems.
 These systems typically start by computing a feature on the reference models and placing them in a lookup structure.
@@ -35,7 +37,7 @@ The registered distance from the four top canidates are returned as the estimate
 Finally, the model that registers most closely with the scene is selected as the detected model.
 
 \subsubsection{Stock Variants}
-The other detectors that we are publishing are variants that replace FPFH with other local features supported by PCL. There are branches using PFH \cite{pfh1, pfh2}, spin images \cite{Johnson99}, and SHOT \cite{shot}.
+The other detectors that we are publishing are variants that replace FPFH with other local features supported by PCL. There are branches using PFH \cite{pfh1, pfh2}, spin images \cite{SpinImages}, and SHOT \cite{shot}.
 The classification and registration mechanisms remain the same.
 
 \subsection{Proctor}
