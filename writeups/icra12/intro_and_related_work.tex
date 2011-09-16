@@ -14,7 +14,7 @@ But the sheer diversity of applications has made it hard to see the common patte
 We hope to foster easier sharing of ideas and methods through a common evaluation framework for 3-D perception tasks.
 In this paper, we present an open-source framework for comparing different 3-D features in the model matching evaluation regime.
 We explain the motivations behind our system and describe its modular architecture, with the aim of encouraging a community of users and contributors.
-In robotics, the PR-2 \note{citation?} has facilitated rapid progress in personal robotics research due to standardization and abstraction of the hardware interface.
+In robotics, the PR2 \note{citation?} has facilitated rapid progress in personal robotics research due to standardization and abstraction of the hardware interface.
 In computer vision, standard datasets and evaluation tasks such as the Caltech-101 \cite{FeiFei2007a} and the PASCAL Visual Object Challenge \cite{pascal-voc-2010} have focused research by giving groups a clear metric, and resulted in rapid logistic-curve improvement in object classification and detection.
 
 Our system, Proctor, aims for the same kind of impact in 3-D features, and classification and pose estimation methods research.
@@ -54,7 +54,7 @@ An idea related to the spin image is the 3-D shape context descriptor \cite{From
 The method is to center a radially-binned sphere around a point on the surface of the 3-D data, and construct a histogram of points that fall within the bins.
 The bins are weighted by distance to the center, and the bins are spaced logarithmically along the radial dimension to increase robustness to noise and clutter.
 
-Point Feature Histograms \cite{Rusu2009} attempt to describe a region by representing the relationships between surface normals of a k-neighborhood of the center point of the region.
+Point Feature Histograms \cite{pfh1} attempt to describe a region by representing the relationships between surface normals of a k-neighborhood of the center point of the region.
 The resulting feature is invariant to 6-D pose of the surface and robust to noise on the surface.
 Speed is a concern for the calculation of this feature, and the Fast PFH mitigates it by a recursive lookup of a simplified feature in a smaller neighborhood.
 
