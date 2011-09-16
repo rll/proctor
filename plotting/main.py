@@ -122,6 +122,7 @@ class EvalSet:
     tex_filename = self.table_tex_filename_template%feat_names
     with open(tex_filename,'w') as f:
       print_with_max = lambda numbers: ' & '.join(["\\bf %.2f"%x if x==max(numbers) else "%.2f"%x for x in numbers])
+      print_with_min = lambda numbers: ' & '.join(["\\bf %.2f"%x if x==min(numbers) else "%.2f"%x for x in numbers])
       accuracies = [100*e.accuracy for e in evals]
       aps = [e.ap for e in evals]
       avg_ranks = [e.avg_rank for e in evals]
@@ -133,7 +134,7 @@ class EvalSet:
         '\hline',
         ' \% Correct & '+print_with_max(accuracies)+' \\\\', 
         'AP & '+print_with_max(aps)+' \\\\', 
-        'Avg. Rank & '+print_with_max(avg_ranks)+' \\\\', 
+        'Avg. Rank & '+print_with_min(avg_ranks)+' \\\\', 
         'AUH & '+print_with_max(auhs)+' \\\\', 
         '\hline',
         '\end{tabular}'])
