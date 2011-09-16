@@ -21,6 +21,27 @@ The results for the Princeton Shape Benchmark can be seen in~\ref{tab:psb_result
   \label{tab:psb_results}
 \end{table}
 
+%\begin{figure*}
+%  \centering
+%  \subfloat[]{\includegraphics[width=0.45\textwidth]{../figures/PFH_confmat.png}}
+%  \subfloat[]{\includegraphics[width=0.45\textwidth]{../figures/PFH_rankhist.png}} \\
+%  \subfloat[]{\includegraphics[width=0.45\textwidth]{../figures/FPFH_confmat.png}}
+%  \subfloat[]{\includegraphics[width=0.45\textwidth]{../figures/FPFH_rankhist.png}} \\
+%  \caption{Dashboard figure}
+%  \label{fig:animals}
+%\end{figure*}
+
+\begin{table*}
+\centering
+\begin{tabular}{m{0.03\textwidth} m{0.45\textwidth} m{0.45\textwidth}}
+     & \begin{center} Confusion Matrix \end{center} & \begin{center} Cumulative Rank Histogram \end{center} \\
+  {\large PFH} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/PFH_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/PFH_rankhist.png} \\
+  {\large FPFH} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/FPFH_confmat.png} & \includegraphics[width=0.45\textwidth,clip=true]{../figures/FPFH_rankhist.png} \\
+\end{tabular}
+\caption{A table arranging images}
+\label{tab:gt}
+\end{table*}
+
 An additional important evaluation is the runtime performance of different methods.
 This data allows focused work on fast feature extraction and on algorithms to speed up matching, such as locality-sensitive hashing \cite{Frome2004}.
 Hence, we report timing results, split by the different stages of our pipeline, for all experimental conditions.
