@@ -1,6 +1,6 @@
 %!TEX root=./report.tex
 \section{ARCHITECTURE AND IMPLEMENTATION}
-Our evaluation framework is built around classes from PCL \cite{Rusu2011} and VTK \cite{vtk}.
+Our evaluation framework is built around classes from PCL \cite{PCL} and VTK \cite{vtk}.
 The stock detection algorithm relies heavily PCL, which does all of the lower level work.
 We use the Princeton Shape Benchmark.
 Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner \cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
@@ -9,8 +9,8 @@ Our evaluation framework has two major parts. First is the Detector class, which
 
 \subsection{Detector}
 In designing this class, we tried to accommodate a common strategy in detection systems.
-These systems typically start by computing a feature, which tries to capture some information about the shape.
-Then, a classification algorithm use these features with a lookup structure to narrow down the candidate models to a few likely fits.
+These systems typically start by computing a feature on the reference models and placing them in a lookup structure.
+Then, a classification algorithm use this structure to narrow down the candidate models to a few likely fits.
 Finally, it attempts to register the query scene with the likely candidates. This is usually more expensive than the feature computation and classification.
 
 A custom detector must follow an interface with methods that take training data and test queries.
