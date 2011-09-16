@@ -77,8 +77,6 @@ class EvalSet:
       self.savefig_wrap(features,data_source)
 
     self.prep_bar((8,4))
-
-      
     feat_times = [e.time['test_features'] for e in evals]
     print(feat_times)
     p1 = barh(ind,feat_times,color=colors[0],label='Feature computation')
@@ -117,7 +115,9 @@ class EvalSet:
     ind = arange(len(evals))
 
     clf()
-    fig, ((ax1, ax2, ax3, ax4)) = subplots(1, 4, figsize=(12,6), sharex=True, sharey=True)
+    fig, ((ax1, ax2, ax3, ax4)) = subplots(1, 4, figsize=(16,4), sharex=False, sharey=True)
+    fig.set_dpi(300)
+    subplots_adjust(bottom=0.16,left=0.05,right=0.95)
     self.turn_off_up_right_axes(ax1)
     self.turn_off_up_right_axes(ax2)
     self.turn_off_up_right_axes(ax3)
@@ -125,29 +125,23 @@ class EvalSet:
     setp(ax2.get_yticklabels(), visible=False)
     setp(ax3.get_yticklabels(), visible=False)
     setp(ax4.get_yticklabels(), visible=False)
-      
-    times = [e.time['test_features'] for e in evals]
-    print(times)
-    ax1.barh(ind,times)
-    yticks(ind+0.5,names)
-    ax1.set_xlabel('Feature Computation')
+    
+    axs = [ax1,ax2,ax3,ax4]
+    data_sources = ['test_features','voting','alignment_inferred','ICP']
+    xlabels = ['Feature Description', 'Voting', 'Initial Alignment', 'ICP']
 
-    times = [e.time['voting'] for e in evals]
-    print(times)
-    ax2.barh(ind,times)
-    ax2.set_xlabel('Voting')
+    for ax,data_source,xlabel in zip(axs,data_sources,xlabels):
+      times = [e.time[data_source] for e in evals]
+      ax.barh(ind,times,color='black')
+      for j,d in enumerate(times):
+        ax.text(d+max(times)*0.02, j+0.35, "%.2f"%d)
+      ax.xaxis.grid(True)
+      ax.set_xlabel('Time (sec)')
+      setp(ax.get_xticklabels(),rotation=30)
+      ax.set_title(xlabel)
+      yticks(ind+0.5,names)
 
-    times = [e.time['alignment_inferred'] for e in evals]
-    print(times)
-    ax3.barh(ind,times)
-    ax3.set_xlabel('Initial Alignment')
-
-    times = [e.time['ICP'] for e in evals]
-    print(times)
-    ax4.barh(ind,times)
-    ax4.set_xlabel('ICP')
-
-    self.savefig_wrap(features,'timing_test',fig=fig)
+    self.savefig_wrap(features,'timing_test_panel')
 
   def turn_off_up_right_axes(self,ax):
     for loc, spine in ax.spines.iteritems():
@@ -365,7 +359,8 @@ def main():
   if do_plot:
     e_set.plot_rank_histogram()
     e_set.plot_pr()
-  e_set.plot_timing()
+    e_set.plot_timing()
+  e_set.plot_timing_panel()
 
   # Generate feature comparison table and latex figure
   #e_set.print_comparison_table()
