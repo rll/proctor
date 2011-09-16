@@ -54,6 +54,95 @@ class EvalSet:
     print("  AP: %s"%e.ap)
     print("  Average rank: %s"%e.avg_rank)
     print("  AUH: %s"%e.auh)
+    pprint(e.time)
+
+  def plot_timing(self, features=None):
+    evals,feat_names = self.process_features(features)
+    names = [e.nice_name for e in evals]
+    colors = ['blue','green','red','cyan']
+    width = 0.9
+    ind = arange(len(evals))
+
+    clf()
+    fig = gcf() 
+    fig.set_size_inches( 16 , 6 )
+    fig.set_dpi(70)
+    ax1 = fig.add_subplot('111')
+    self.turn_off_up_right_axes(ax1)
+      
+    feat_times = [e.time['test_features'] for e in evals]
+    print(feat_times)
+    p1 = barh(ind,feat_times,color=colors[0],label='Feature computation')
+
+    vote_times = [e.time['voting'] for e in evals]
+    print(vote_times)
+    p2 = barh(ind,vote_times,left=feat_times,color=colors[1],label='Voting')
+
+    align_times = [e.time['alignment_inferred'] for e in evals]
+    print(align_times)
+    p3 = barh(ind,align_times,left=add(feat_times,vote_times),color=colors[2],label='Alignment')
+
+    icp_times = [e.time['ICP'] for e in evals]
+    print(icp_times)
+    p4 = barh(ind,icp_times, left=add(add(feat_times,vote_times),align_times),color=colors[3],label='ICP')
+
+    yticks(ind+0.5,names)
+    xlabel('Time in seconds')
+    legend(loc='lower right')
+    self.savefig_wrap(features,'timing_test')
+
+  def plot_timing_panel(self, features=None):
+    evals,feat_names = self.process_features(features)
+    names = [e.nice_name for e in evals]
+    colors = ['blue','green','red','cyan']
+    width = 0.9
+    ind = arange(len(evals))
+
+    clf()
+    fig, ((ax1, ax2, ax3, ax4)) = subplots(1, 4, figsize=(12,6), sharex=True, sharey=True)
+    self.turn_off_up_right_axes(ax1)
+    self.turn_off_up_right_axes(ax2)
+    self.turn_off_up_right_axes(ax3)
+    self.turn_off_up_right_axes(ax4)
+    setp(ax2.get_yticklabels(), visible=False)
+    setp(ax3.get_yticklabels(), visible=False)
+    setp(ax4.get_yticklabels(), visible=False)
+      
+    times = [e.time['test_features'] for e in evals]
+    print(times)
+    ax1.barh(ind,times)
+    yticks(ind+0.5,names)
+    ax1.set_xlabel('Feature Computation')
+
+    times = [e.time['voting'] for e in evals]
+    print(times)
+    ax2.barh(ind,times)
+    ax2.set_xlabel('Voting')
+
+    times = [e.time['alignment_inferred'] for e in evals]
+    print(times)
+    ax3.barh(ind,times)
+    ax3.set_xlabel('Initial Alignment')
+
+    times = [e.time['ICP'] for e in evals]
+    print(times)
+    ax4.barh(ind,times)
+    ax4.set_xlabel('ICP')
+
+    self.savefig_wrap(features,'timing_test',fig=fig)
+
+  def turn_off_up_right_axes(self,ax):
+    for loc, spine in ax.spines.iteritems():
+      if loc in ['left','bottom']:
+        #spine.set_position(('outward',10)) # outward by 10 points
+        None
+      elif loc in ['right','top']:
+        spine.set_color('none') # don't draw spine
+      else:
+        raise ValueError('unknown spine location: %s'%loc)
+    ax.xaxis.set_ticks_position('bottom')
+    ax.yaxis.set_ticks_position('left')
+    return ax
 
   def plot_rank_histogram(self, features=None):
     evals,feat_names = self.process_features(features)
@@ -117,7 +206,7 @@ class EvalSet:
 
     self.savefig_wrap([feature],'confmat')
 
-  def savefig_wrap(self, features, suffix):
+  def savefig_wrap(self, features, suffix,fig=None):
     """Saves the plot to a canonical name."""
     evals,feat_names = self.process_features(features)
     filename = self.plot_location+"%s_%s.png"%(feat_names,suffix)
@@ -211,7 +300,7 @@ def main():
   a combined PR curve evaluation.
   """
   do_plot = True 
-  #do_plot = False 
+  do_plot = False 
 
   # Set the basic things about this run
   # TODO: accept these from the command line
@@ -252,13 +341,14 @@ def main():
       e_set.plot_pr([feature])
 
   # Print feature comparison table and output PR plot
-  e_set.print_comparison_table()
   if do_plot:
     e_set.plot_rank_histogram()
     e_set.plot_pr()
+  e_set.plot_timing()
 
-  # Generate consolidation latex figure
-  e_set.generate_subfig()
+  # Generate feature comparison table and latex figure
+  #e_set.print_comparison_table()
+  #e_set.generate_subfig()
 
 if __name__ == '__main__':
   main()

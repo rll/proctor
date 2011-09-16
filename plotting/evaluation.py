@@ -20,6 +20,7 @@ class Evaluation:
       lines = log.readlines()
 
     self.trials = []
+    self.time = {}
     i = 0
     while i < len(lines):
       l = lines[i]
@@ -76,10 +77,26 @@ class Evaluation:
         self.confusion_matrix = matrix(';'.join(data))
 
       # Timing info
-      if l.find('[timing]') > -1:
-        print("TIMING HERE")
-        # TODO: do timing info 
+      if l.find('detector training:') > -1:
+        self.time['train_total'] = float(l.split()[2])
+      if l.find('detector testing:') > -1:
+        self.time['test_total'] = float(l.split()[2])
+      if l.find('obtain training features:') > -1:
+        self.time['train_features'] = float(l.split()[3])
+      if l.find('build feature tree:') > -1:
+        self.time['build_tree'] = float(l.split()[3])
+      if l.find('compute testing features:') > -1:
+        self.time['test_features'] = float(l.split()[3])
+      if l.find('voting classifier:') > -1:
+        self.time['voting'] = float(l.split()[2])
+      if l.find('initial alignment:') > -1:
+        self.time['alignment'] = float(l.split()[2])
+      if l.find('ICP:') > -1:
+        self.time['ICP'] = float(l.split()[1])
+
       i += 1
+    self.time['alignment_inferred'] = self.time['test_total']-self.time['test_features']-self.time['voting']-self.time['ICP']
+
 
   def rank_histogram_data(self):
     # Go through and count the number of times the right model was rank-1,
