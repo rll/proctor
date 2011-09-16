@@ -112,7 +112,7 @@ class EvalSet:
           else:
             text(j-.2, i+.2, "%.2f"%c, color='white', fontsize=12)
     #cb = fig.colorbar(res)
-    xticks(arange(0, self.num_models), self.model_names, rotation=30, size=16)
+    xticks(arange(0, self.num_models), self.model_names, rotation=30)
     yticks(arange(0, self.num_models), self.model_names, size=16)
 
     self.savefig_wrap([feature],'confmat')
@@ -211,7 +211,7 @@ def main():
   a combined PR curve evaluation.
   """
   do_plot = True 
-  do_plot = False 
+  #do_plot = False 
 
   # Set the basic things about this run
   # TODO: accept these from the command line
