@@ -22,7 +22,7 @@ Our system, Proctor, aims for the same kind of impact in 3-D features, and class
 \section{PROBLEM SETTING}
 
 There is a wide range of 3-D perception problems.
-While in the longer run the goal of our framework is to capture this wide range more comprehensively, for now we are focused on a path through the possible choice tree.
+While in the long run the goal of our framework is to capture this wide range more comprehensively, for now we are focused on a path through choices as given below.
 
 Given a database and a view, our task may be to:
 \begin{itemize}
@@ -72,7 +72,7 @@ Thus each voxel bin is not just a number, but a histogram of its own.
 
 Point Feature Histograms \cite{pfh1} attempt to describe a region by representing the relationships between surface normals of a k-neighborhood of the center point of the region.
 The resulting feature is invariant to 6-D pose of the surface and robust to noise on the surface.
-Speed is a concern for the calculation of this feature, and the Fast PFH mitigates it by a recursive lookup of a simplified feature in a smaller neighborhood.
+Speed is a concern for the calculation of this feature, and the Fast PFH~\cite{fpfh1} mitigates it by a recursive lookup of a simplified feature in a smaller neighborhood.
 
 To achieve viewpoint variance, the related idea of the Viewpoint Feature Histogram \cite{Rusu2010} calculates some of the PFH-type normal angle relations with respect to the viewpoint, which is desirable for rapid object recognition.
 
