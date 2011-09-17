@@ -110,11 +110,10 @@ In this paper, in all cases, the tests were run on a 2.50 GHz Intel Core2 Quad Q
 The results on two datasets, the Princeton Shape Benchmark (PSB), and the Willow Garage Grasping (WGG) Dataset, are presented in Figures \ref{fig:PSB_dashboard}, \ref{fig:PSB_timing}, \ref{fig:WGDB_dashboard}, and \ref{fig:WGDB_timing}.
 
 We can see that across the board, FPFH is an excellent feature.
-It performs best in the \% Correct and AP metrics for both dataset, although Spin Images do better in the Ranking evaluations for the WGG dataset.
-Spin Images are also consistently the fastest feature in all evaluations.
-From the timing breakdown plots, we can note that althoug the description is fast for them, the alignment stage is the slowest among all the features.
+It performs best in the \% Correct and AP metrics for both dataset, although SHOW does better in the Ranking evaluations for the WGG dataset.
+From the timing breakdown plots, we can note that although the description is fast for SHOT, the voting stage is the slowest among all the features.
 
-Although its voting performance is good, after the registration step, Spin Images are the worst-performing on both the datasets.
-This is a valuable problem identification, as we are now aware of their speed and accuracy in voting, and only need to work on the initial alignment and registration steps if we want to boost their performance.
+Although its voting performance is best, SHOT's performance drops after the registration step.
+This is a valuable problem identification, as we are now aware of the feature's speed and accuracy in voting, and only need to work on the initial alignment and registration steps if we want to boost its performance.
 
 Proctor enables this kind of problem identification, and the Dashboards allow constant monitoring of progress as solutions are tried.
