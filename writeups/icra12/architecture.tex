@@ -30,12 +30,12 @@ Ultimately, the Detector class is intended to be something that algorithm author
 We are publishing the current contribution with a few stock detectors, which serve as both a scaffolding for modular enhancements and baselines for larger efforts.
 The primary stock implementation makes use of Fast Point Feature Histograms~\cite{fpfh1, fpfh2}, a voting-based classification algorithm, and registration.
 
-During training, the stock implementation divides the points of each model into uniform voxels. For each voxel, it picks a representative point that is closest to the centroid of the voxel. This subset is a dense keypoint sampling of the model. It computes the FPFH centered at each of the keypoints. A KdTree is built from these feature histograms and stored for later use.
+During training, the stock implementation divides the points of each model into uniform voxels. For each voxel, it picks a representative point that is closest to the centroid of the voxel. This subset is a dense keypoint sampling of the model. It computes the FPFH centered at each of the keypoints. A KD-Tree is built from these feature histograms and stored for later use.
 
 During testing, the stock implementation starts the same way as training: it uses a voxel grid to generate a dense keypoint set, and computes FPFH on those keypoints.
-For each keypoint in the query scene, the implementation searches the KdTree built during training for the four nearest neighbors in feature space. Each of these results contributes a vote for the corresponding model, weighted by the reciprocal of the $L^2$ distance between the scene feature vector and the model feature vector.
+For each keypoint in the query scene, the implementation searches the KD-Tree built during training for the four nearest neighbors in feature space. Each of these results contributes a vote for the corresponding model, weighted by the reciprocal of the $L^2$ distance between the scene feature vector and the model feature vector.
 The implementation then tries to register the query with the four candidate models that have the greatest total votes.
-This is done by first using the initial alignment algorithm described in section IV of the FPFH paper, then, running a few iterations of ICP.
+This is done by first using the initial alignment algorithm described in section IV of the FPFH paper, then running a few iterations of Iterative Closest Point \cite{BeslMcKay}.
 
 A screenshot of the visualization provided by the stock detector is provided in \autoref{fig:vis}. The query scene is drawn in white, and the classifier's top four candidate models are shown in red. While the voting classifier is partial to the Parthenon model, registration reveals that the scene is geometrically consistent with the spider.
 \begin{figure}[thpb]
