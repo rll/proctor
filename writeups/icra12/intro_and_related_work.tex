@@ -1,7 +1,7 @@
 %!TEX root=./report.tex
 \section{INTRODUCTION}
 Research in robotics and computer vision has long considered the use of 3-D point clouds as a rich source of information about the world.
-Throughout the history of research, the recognition methods and features considered have shared ideas--from early work on retrieving 3-D shape models to integrating 2-D and 3-D percepts to human pose estimation.
+Throughout the history of research, the recognition methods and features considered have shared ideas---from early work on retrieving 3-D shape models to integrating 2-D and 3-D percepts to human pose estimation.
 But the sheer diversity of applications has made it hard to see the common patterns, and nearly impossible to meaningfully compare between different choices made in the processing pipeline.
 
 \begin{figure}[thpb]
@@ -15,13 +15,15 @@ We hope to foster easier sharing of ideas and methods through a common evaluatio
 In this paper, we present an open-source framework for comparing different 3-D features in the model matching evaluation regime.
 We explain the motivations behind our system and describe its modular architecture, with the aim of encouraging a community of users and contributors.
 In robotics, the Willow Garage PR2 has facilitated rapid progress in personal robotics research due to standardization and abstraction of the hardware interface.
-In computer vision, standard datasets and evaluation tasks such as the Caltech-101 \cite{FeiFei2007a} and the PASCAL Visual Object Challenge \cite{pascal-voc-2010} have focused research by giving groups a clear metric, and resulted in rapid improvement in object classification and detection.
+In computer vision, standard datasets and evaluation tasks such as the PASCAL Visual Object Challenge \cite{pascal-voc-2010} have focused research by giving groups a clear metric, and resulted in rapid improvement in object classification and detection.
 
 Our system, Proctor, aims for the same kind of impact in 3-D features, and classification and pose estimation methods research.
 
 \section{PROBLEM SETTING}
 
-There is a wide range of 3-D perception problems.  While in the longer run the goal of our framework is to capture this wide range more comprehensively, for now it is focused on the following types of tasks:
+There is a wide range of 3-D perception problems.
+While in the longer run the goal of our framework is to capture this wide range more comprehensively, for now we are focused on a path through the possible choice tree.
+
 Given a database and a view, our task may be to:
 \begin{itemize}
 \item identify the object in the view (recognition),
@@ -46,7 +48,7 @@ and the intent of this line of open-source work is to provide a
 framework to which the community can easily contribute any 3-D shape
 retrieval algorithms of interest.
 
-We discuss a list of 3D descriptors and various different datasets in the following subsections.
+We discuss a list of 3-D descriptors and various different datasets in the following subsections.
 
 \subsection{Features}
 For 3-D object detection, a feature tries to capture something about the shape of a model or a part of a model.
@@ -77,7 +79,7 @@ To achieve viewpoint variance, the related idea of the Viewpoint Feature Histogr
 
 %* An interesting simple but robust feature was used for pose recognition in the Microsoft Kinect \cite{Shotton2011}. 
 
-The SHREC 2011 Benchmark \cite{Boyer2011} is an evaluation of 3-D feature detection and description stages of shape retrieval algorithms.
+One existing benchmark for features is the recent SHREC Benchmark \cite{Boyer2011} is an evaluation of 3-D feature detection and description stages of shape retrieval algorithms.
 The benchmark measures how the detection and description algorithms degrade under synthetic transformations of the 3D data, including sub-sampling, isometry, holes, shot and random noise, view, and affine.
 The benchmark is inspired by similar evaluation of computer vision features(\cite{Mikolajczyk2004,Mikolajczyk2005}, and the features evaluated are largely 3-D analogs of 2-D detectors and descriptors such as the Harris corner and Difference-of-Gaussians \cite{Harris1988,Lowe2004} detectors and SIFT, HOG, and MSER descriptors \cite{Lowe2004,Dalal2005,Matas2004}.
 
@@ -111,23 +113,24 @@ A collection of small household objects appropriate for a robot to hold.
 These models are also in polygonal format.
 
 \subsubsection{2D/3D Data}
-{\bf Rgbd-dataset of \cite{Lai2011}}:
-This dataset features 300 objects in 51 categories.
-The category count refers to nodes in a hierarchy, with, for example, ``coffee mug'' having ``mug'' as parent.
-Each category is represented by 4-6 instances, which are densely photographed on a turntable.
-For object detection, only 8 short video clips are available, which lend themselves to evaluation of just 4 categories (bowl, cap, coffee mug, and soda can) and 20 instances.
-
-%{\bf UBC Visual Robot Survey \cite{Helmer2010}}:
-%The Visual Robot Survey dataset from UBC provides training data for 4 categories (mug, bottle, bowl, and shoe) and 30 cluttered scenes for testing detection approaches.
-Each scene is photographed in a controlled setting from multiple viewpoints.
+%{\bf Rgbd-dataset of \cite{Lai2011}}:
+%This dataset features 300 objects in 51 categories.
+%The category count refers to nodes in a hierarchy, with, for example, ``coffee mug'' having ``mug'' as parent.
+%Each category is represented by 4-6 instances, which are densely photographed on a turntable.
+%For object detection, only 8 short video clips are available, which lend themselves to evaluation of just 4 categories (bowl, cap, coffee mug, and soda can) and 20 instances.
+%
+%%{\bf UBC Visual Robot Survey \cite{Helmer2010}}:
+%%The Visual Robot Survey dataset from UBC provides training data for 4 categories (mug, bottle, bowl, and shoe) and 30 cluttered scenes for testing detection approaches.
+%Each scene is photographed in a controlled setting from multiple viewpoints.
 
 %{\bf 3D table top object dataset \cite{Sun2010}}:
 %The ``3D table top object dataset'' covers 3 categories (mouse, mug, stapler) and provides 200 test images with cluttered background.
-There is no significant viewpoint variation in the test set.
+%There is no significant viewpoint variation in the test set.
 
 {\bf Solutions in Perception Challenge \cite{SIPC2011}}:
 The dataset of the ``Solutions in Perception Challenge,'' which will take place in conjunction with ICRA'12.
-The goal of the challenge is to identify the extent to which 3D recognition problem is ``solved;'' it thus focuses on the high-precision part of the performance curve.
+The goal of the challenge is to identify the extent to which 3D recognition problem is ``solved.''
+It thus focuses on the high-precision part of the performance curve.
 The 2011 challenge consisted of 35 distinct objects such as branded boxes and household cleaner bottles that are presented in isolation for training and in 27 scenes for test.
 
 {\bf A Category-level 3-D Object Dataset: Putting the Kinect to Work \cite{Janoch2011}}:
