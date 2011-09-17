@@ -2,8 +2,10 @@
 \section{ARCHITECTURE AND IMPLEMENTATION}
 Our evaluation framework is built around classes from PCL~\cite{PCL} and VTK~\cite{vtk}.
 The stock detection algorithm relies heavily PCL, which does all of the lower level work.
-We use the Princeton Shape Benchmark.
-Since the dataset contains polygonal representations, the framework uses simulated lidar scanning to create point clouds. We use SyntheticLidarScanner~\cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
+The logic to obtain appropriate training/test vectors depends on the type of dataset being used.
+If the dataset contains polygonal representations, the framework uses simulated LIDAR scanning to create point clouds.
+We use SyntheticLidarScanner~\cite{Doria2009}, which provides a feature-rich utility which allows us to control the point cloud resolution and noisiness.
+This is not necessary for datasets with point representations.
 
 Our evaluation framework has two major parts. First is the Detector class, which houses the detection logic. Second is the Proctor class, which generates tests and reports. These are illustrated in \autoref{fig:arch}.
 
@@ -24,7 +26,7 @@ A custom detector must follow an interface with methods that take training data 
 For training, the detector receives the full point cloud of each model.
 For testing, the detector receives a range scan of some model, at some angle. It must output an estimated similarity for each candidate model, a more precise estimated distance to some candidate models, and a best guess of which model was scanned.
 In particular, we intend that detection systems that fit the description in the previous paragraph populate the similarities with classifier scores and populate the precise distances with Euclidean distances after registration.
-Ultimately, the Detector class is intended to be something that algorithm authors shall edit.
+Ultimately, the Detector class is intended to be something that algorithm authors edit.
 
 \subsubsection{Primary Stock Detector}
 We are publishing the current contribution with a few stock detectors, which serve as both a scaffolding for modular enhancements and baselines for larger efforts.
@@ -50,7 +52,7 @@ The registered distance from the four top canidates are returned as the estimate
 Finally, the model that registers most closely with the scene is selected as the detected model.
 
 \subsubsection{Stock Variants}
-Other detectors already in place are variants that replace FPFH with other local features supported by PCL. There are branches using PFH~\cite{pfh1, pfh2}, spin images~\cite{SpinImages}, and SHOT~\cite{shot}.
+Other detectors already in place are variants that replace FPFH with other local features supported by PCL: PFH~\cite{pfh1, pfh2}, spin images~\cite{SpinImages}, and SHOT~\cite{shot}.
 The classification and registration mechanisms remain the same.
 
 \subsection{Proctor}
