@@ -35,7 +35,7 @@ class EvalSet:
     evals,feat_names = self.process_features(features)
     clf()
     colors = ['blue','gold','green','magenta']
-    linestyles = ['-', '--', ':']
+    linestyles = ['--','-',':']
     for i,e in enumerate(evals):
       label = "%s: %.3f"%(e.nice_name,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
