@@ -44,6 +44,7 @@ class Evaluation:
         self.num_trials = len(self.trials)
         self.counts = self.rank_histogram_data()
         self.auh_inferred = sum([8,7,6,5,4] * self.counts)/640.
+        self.avg_rank_inferred = sum([1,2,3,4,5] * (self.counts/80.))
       
       # Overview output
       if l.find('[overview]') > -1:

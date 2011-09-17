@@ -39,7 +39,7 @@ class EvalSet:
     for i,e in enumerate(evals):
       label = "%s: %.3f"%(e.nice_name,e.ap)
       lstyle = linestyles[mod(i,len(linestyles))]
-      plot(e.recall,e.precision,lstyle,label=label,linewidth=3,color=colors[i])
+      plot(e.recall,e.precision,lstyle,label=label,linewidth=5,color=colors[i])
     legend(loc='lower left')
     xlabel('Recall',size=16)
     ylabel('Precision',size=16)
@@ -54,6 +54,7 @@ class EvalSet:
     print("  Accuracy: %s"%e.accuracy)
     print("  AP: %s"%e.ap)
     print("  Average rank: %s"%e.avg_rank)
+    print("  Average rank inferred: %s"%e.avg_rank_inferred)
     print("  AUCR: %s"%e.auh)
     print("  AUCR inferred: %s"%e.auh_inferred)
     pprint(e.time)
@@ -253,7 +254,7 @@ class EvalSet:
       print_with_min = lambda numbers: ' & '.join(["\\bf %.2f"%x if x==min(numbers) else "%.2f"%x for x in numbers])
       accuracies = [100*e.accuracy for e in evals]
       aps = [e.ap for e in evals]
-      avg_ranks = [e.avg_rank for e in evals]
+      avg_ranks = [e.avg_rank_inferred for e in evals]
       auhs = [e.auh_inferred for e in evals]
       table = '\n'.join([
         '\\begin{tabular}{ | l || %s | }'%' | '.join(['c' for e in evals]),
