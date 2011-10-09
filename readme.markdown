@@ -1,5 +1,41 @@
 This program tests point cloud based object detection algorithms. I call it the Proctor.
 
+# Installation / Environmental Considerations
+
+This program depends on the following:
+
+* CMake 2.6 
+* PCL 1.2.0 modified (see below)
+* Eigen3
+* VTK 5.8
+
+Since the stock Detector implementation depends on a feature not found in PCL 1.2.0, for now, Proctor requires that you checkout the PCL trunk and modify `ia_ransac.h` such that the `using` and `typedef`s in the `SampleConsensusInitialAlignment` class are public.
+
+# Usage
+
+This program is hosted on gihub.
+
+Supposing you can get a copy, you have a try by entering the following commands:
+
+``` shell
+mkdir build
+cd build
+cmake ..
+make
+cd ..
+mkdir runtime
+cd runtime
+../build/main
+```
+
+Note that `main` can take up to two arguments:
+
+``` shell
+main [MODEL SUBSET SEED] [TESTING SEED]
+```
+
+Note that training range scans and features are stored in the runtime directory. If you change the scanning parameters (e.g. resolution), you should delete the `scan_` files. If you change the feature or the feature parameters, you should delete the `feature_` files.
+
 # Class Overview
 
 ## Detector
@@ -73,42 +109,6 @@ This namespace exposes certain configuration variables.
 ## Scanner
 
 This class provides a layer of abstraction over mesh-to-cloud conversion. The current implementation uses [SyntheticLidarScanner](https://github.com/daviddoria/SyntheticLidarScanner).
-
-# Environmental Considerations
-
-This program depends on the following:
-
-* CMake 2.6 
-* PCL 1.2.0 modified
-* Eigen3
-* VTK 5.8
-
-For the stock Detector implementation to compile on g++ 4.4.3, `SampleConsensusInitialAlignment` must be modified such that the `using` declarations and `typedef`s are public.
-
-# Usage
-
-This program is hosted on gihub.
-
-Supposing you can get a copy, you have a try by entering the following commands:
-
-``` shell
-mkdir build
-cd build
-cmake ..
-make
-cd ..
-mkdir runtime
-cd runtime
-../build/main
-```
-
-Note that `main` can take up to two arguments:
-
-``` shell
-main [MODEL SUBSET SEED] [TESTING SEED]
-```
-
-Note that training range scans and features are stored in the runtime directory. If you change the scanning parameters (e.g. resolution), you should delete the `scan_` files. If you change the feature or the feature parameters, you should delete the `feature_` files.
 
 # Things You Might Do
 
