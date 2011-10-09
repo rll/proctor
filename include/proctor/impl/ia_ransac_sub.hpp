@@ -122,7 +122,7 @@ computeTransformation (PointCloudSource &output)
     findSimilarFeaturesSubset (sample_indices_features, corresponding_indices_cloud);
 
     // Estimate the transform from the samples to their corresponding points
-    estimateRigidTransformationSVD (*input_, sample_indices_cloud, *target_, corresponding_indices_cloud, transformation_);
+    transformation_estimation_->estimateRigidTransformation (*input_, sample_indices_cloud, *target_, corresponding_indices_cloud, transformation_);
 
     // Tranform the data and compute the error
     transformPointCloud (*input_, input_transformed, transformation_);

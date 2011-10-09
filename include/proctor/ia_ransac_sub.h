@@ -31,6 +31,7 @@ public:
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::target_features_;
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::transformation_;
   using SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::update_visualizer_;
+  using Registration<PointSource, PointTarget>::transformation_estimation_;
 
   typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::PointCloudSource PointCloudSource;
   typedef typename SampleConsensusInitialAlignment<PointSource, PointTarget, FeatureT>::FeatureCloud FeatureCloud;
