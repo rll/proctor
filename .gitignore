@@ -6,3 +6,4 @@ report*.make.*
 report.d
 report.fls
 report.brf
+build/
