@@ -103,18 +103,26 @@ void Proctor::readModels(const char *base, int max_models, unsigned int seed) {
   } // end for over models
 }
 
+PointCloud<PointNormal>::Ptr
+Proctor::getFullPointCloud(int mi) {
+    PointCloud<PointNormal>::Ptr full_cloud(new PointCloud<PointNormal>());
+
+    for (int ti = 0; ti < theta_count; ti++) {
+      for (int pi = 0; pi < phi_count; pi++) {
+        *full_cloud += *Scanner::getCloudCached(mi, ti, pi);
+        flush(cout << '.');
+      }
+    }
+
+    return full_cloud;
+}
+
 void Proctor::train(Detector &detector) {
   cout << "[models]" << endl;
   timer.start();
   PointCloud<PointNormal>::Ptr clouds[Config::num_models];
   for (int mi = 0; mi < Config::num_models; mi++) {
-    clouds[mi] = PointCloud<PointNormal>::Ptr(new PointCloud<PointNormal>());
-    for (int ti = 0; ti < theta_count; ti++) {
-      for (int pi = 0; pi < phi_count; pi++) {
-        *clouds[mi] += *Scanner::getCloudCached(mi, ti, pi);
-        flush(cout << '.');
-      }
-    }
+    clouds[mi] = getFullPointCloud(mi);
     cout << " finished model " << mi << " (" << models[mi].id << ")" << endl;
   }
   timer.stop(OBTAIN_CLOUD_TRAINING);

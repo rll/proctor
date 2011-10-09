@@ -37,6 +37,8 @@ public:
   /** read meshes and metadata from disk; this populates models */
   static void readModels(const char *base, int max_models, unsigned int seed);
 
+  PointCloud<PointNormal>::Ptr getFullPointCloud(int mi);
+
   /** load/generate training data and pass to detector */
   void train(Detector &detector);
 
