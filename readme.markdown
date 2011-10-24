@@ -4,12 +4,16 @@ This program tests point cloud based object detection algorithms. I call it the 
 
 This program depends on the following:
 
-* CMake 2.6 
+* CMake 2.6
 * PCL 1.2.0 modified (see below)
 * Eigen3
 * VTK 5.8
 
 Since the stock Detector implementation depends on a feature not found in PCL 1.2.0, for now, Proctor requires that you checkout the PCL trunk and modify `ia_ransac.h` such that the `using` and `typedef`s in the `SampleConsensusInitialAlignment` class are public.
+
+In addition, you will have to change several constants:
+* The path of the princeton benchmark database in main.cpp
+* The path of the pcl trunk in CMakeLists.txt
 
 # Usage
 
